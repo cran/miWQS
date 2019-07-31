@@ -30,11 +30,11 @@
 #   }
 
 # # @param x.miss.type = c("uniform","vague") The type of prior to use. Default: uniform.
-#DEFUNCT '@param show.hist Logical, whether to plot a histogram of the prior or not using \pkg{ggplot2}. Default: FALSE.
-#DEFUNCT # @param binwidth : the value that determines the width of the bins in the histogram. Defaults to 10, no effect if show.hist = FALSE.
+# DEFUNCT '@param show.hist Logical, whether to plot a histogram of the prior or not using \pkg{ggplot2}. Default: FALSE.
+# DEFUNCT # @param binwidth : the value that determines the width of the bins in the histogram. Defaults to 10, no effect if show.hist = FALSE.
 # # @param n0 A vector of the number of missing data n0 for each chemical to generate.  Passed from other functions (default).
 # # @param DL A vector of detection limit values DL for each chemical. Passed from other functions (default).
-#DEFUNCT # @param debug: logical -- whether to print more information or not. Default: FALSE.
+# DEFUNCT # @param debug: logical -- whether to print more information or not. Default: FALSE.
 
 # # @return A list of initial values for those missing values.
 
@@ -66,37 +66,34 @@
 # # export #Helper function and not called by user
 
 
-generate.log.xmiss.prior <- function( x.miss.type = c("uniform","vague"),
-                              n0 , DL){  #passed from other functions
+generate.log.xmiss.prior <- function(x.miss.type = c("uniform", "vague"),
+                              n0, DL) {  # passed from other functions
 
-  #Checks if there are any NA's in the Detection Limit
+  # Checks if there are any NA's in the Detection Limit
   stopifnot(sum(is.na(DL)) == 0)
-  x.miss.type <- match.arg ( x.miss.type )  #Sets the default type to be first word in string.
+  x.miss.type <- match.arg (x.miss.type)  # Sets the default type to be first word in string.
   c <- length(DL)  # Number of chemicals.
 
-  if( tolower(x.miss.type)  == "uniform") {
+  if (tolower(x.miss.type)  == "uniform") {
     log.x <- vector(mode = "list", length = c)
-    for(j in 1:c){
-      log.x[[j]] <- log( runif(n0[j], 0, DL[j] ) )
+    for (j in 1:c) {
+      log.x[[j]] <- log(runif(n0[j], 0, DL[j]))
     }
   }
 
-  if( tolower(x.miss.type)  == "vague")  {
+  if (tolower(x.miss.type)  == "vague") {
     log.x <- vector(mode = "list", length = c)
-    for(j in 1:c){
-      log.x[[j]] <-  rep( log(DL[j]) /sqrt(2), n0[j])
+    for (j in 1:c) {
+      log.x[[j]] <-  rep(log(DL[j]) / sqrt(2), n0[j])
     }
   }
 
-  names(log.x) <- names(DL)  #6/14/18: Added names of log(x)
+  names(log.x) <- names(DL)  # 6/14/18: Added names of log(x)
   return(log.x)
 }
 
 
 
 ### Save image ====================================
-#save.image(file = "~/VCU Biostatistics/as work/UniBayesMI/Stage_1_Imputation_Model_R/1ai_log_x_miss_prior_function.RData")
-#cat("> The file is saved in ", getwd(), "\n")
-
-
-
+# save.image(file = "~/VCU Biostatistics/as work/UniBayesMI/Stage_1_Imputation_Model_R/1ai_log_x_miss_prior_function.RData")
+# cat("> The file is saved in ", getwd(), "\n")

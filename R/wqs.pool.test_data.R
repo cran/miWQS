@@ -5,21 +5,20 @@
 #' @usage data(wqs.pool.test)
 #' @keywords datasets
 #'
-#'@description \emph{wqs.pool.test} was produced to demonstrate \code{pool.mi}(). The \code{simdata87} was first imputed multiple times to form an imputed X array. This was an example from \code{impute.univariate.bayesian.mi}. Multiple WQS regressions were run on the imputed X array to produce an array of WQS parameter estimates, \emph{wqs.pool.test}.
+#' @description \emph{wqs.pool.test} was produced to demonstrate \code{pool.mi}(). The \code{simdata87} was first imputed multiple times to form an imputed X array. This was an example from \code{impute.univariate.bayesian.mi}. Multiple WQS regressions were run on the imputed X array to produce an array of WQS parameter estimates, \emph{wqs.pool.test}.
 #'
-#'@format An array of 16 x 2 x 3, with \itemize{
-#' \item 16 parameters as the rows (The 14 weights, Intercept, and WQS  of the wqs.model),
+#' @format An array of 16 x 2 x 3, with \itemize{
+#' \item 16 parameters as the rows (The 14 weights, Intercept, and WQS estimate of a WQS model),
 #' \item 2 refers to the parameters of mean and standard deviation
-#' \item K=3 imputation draws.
-#'}
+#' \item K=3 complete imputed datasets.
+#' }
 #'
-#'@seealso \code{pool.mi}
+#' @seealso \code{pool.mi}
 #'
-#'@examples
-#'wqs.pool.test <- data(wqs.pool.test)
-
-#stage_3_pool_mi_example
-
+#' @examples
+#' wqs.pool.test <- data(wqs.pool.test)
+#'
+#' # stage_3_pool_mi_example
 NULL
 
 # Code to generate wqs.pool.test --------------------------------------------------------------

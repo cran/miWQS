@@ -18,10 +18,13 @@
 Prints the fitted WQS model along with the mean weights. Adjusted from print.lm.
 }
 \examples{
-#See \\code{\\link{estimate.wqs}}.
+# See estimate.wqs().
+
+# As base package is always available, there is no need to ever import base
 }
 \seealso{
-Other wqs: \code{\link{coef.wqs}},
+Other wqs: \code{\link{analyze.individually}},
+  \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
   \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{plot.wqs}}

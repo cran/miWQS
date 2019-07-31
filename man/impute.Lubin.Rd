@@ -2,34 +2,32 @@
 % Please edit documentation in R/impute_Lubin.R
 \name{impute.Lubin}
 \alias{impute.Lubin}
-\title{Lubin et al. 2004: Bootstrapping Imputation}
+\title{Lubin et al. 2004: Bootstrapping Imputation for One Chemical}
 \usage{
-impute.Lubin(chemcol, dlcol, Z = NULL, K = 5, verbose = FALSE)
+impute.Lubin(chemcol, dlcol, Z = NULL, K = 5L, verbose = FALSE)
 }
 \arguments{
-\item{chemcol}{A numeric vector, the chemical concentration levels of length c. Censored values are indicated by  NA. On original scale.}
+\item{chemcol}{A numeric vector, the chemical concentration levels of length C. Censored values are indicated by  NA. On original scale.}
 
-\item{dlcol}{The detection limit of the chemical. A value or a numeric vector of length c. Must be complete; a missing detection limit is ignored.}
+\item{dlcol}{The detection limit of the chemical. A value or a numeric vector of length C. Must be complete; a missing detection limit is ignored.}
 
-\item{Z}{Any covariates used in imputing \emph{chemcol}. Can be any R object but usually a
-dataframe. If NULL, there are none.}
+\item{Z}{Any covariates used in imputing the chemical concentrations.  Ideally, a numeric matrix; however, Z can be a factor, vector, or data-frame. Assumed to be complete; observations with missing covariate variables are ignored in the imputation, with a warning printed. If none, enter NULL.}
 
-\item{K}{The number of imputed datasets to generate.  Default: 5.}
+\item{K}{A natural number of imputed datasets to generate. Defaults: 5L.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in
-the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
 }
 \value{
 A list of: \describe{
-\item{X.imputed}{A n x K matrix of imputed X values.}
+\item{X.imputed}{A matrix with n subjects and K imputed datasets is returned.}
 \item{bootstrap_index}{A n x K matrix of bootstrap indices selected for the imputation.}
-\item{indicator.miss}{A check; the sum of imputed missing values above detection limit,
-         which should be 0. Also printed to screen}
+\item{indicator.miss}{A check; the sum of imputed  missing values above detection limit,
+         which should be 0.}
 }
 }
 \description{
-Given lognormal interval-censored data between 0 and \emph{dlcol} , the function
-creates a K = 5 imputed dataset using a bootstrap procedure as described in Lubin et al. 2004.
+For one chemical, this function creates an imputed dataset using a bootstrap procedure as
+described in Lubin et al. 2004.
 }
 \details{
 Lubin et al. (2004) evaluate several imputation approaches and show that a multiple imputation procedure
@@ -37,14 +35,11 @@ Lubin et al. (2004) evaluate several imputation approaches and show that a multi
   missing data is extreme. The authors coded the multiple imputation procedure in a SAS macro that
   is currently available. We converted the SAS macro into R code.
 
-  A chemical with missing values is imputed. The distribution for the interval-censored data \emph{chemcol} is assumed to be
-  lognormal and censored between 0 and \emph{dlcol}. After bootstrapping, the values BDL are imputed
-  using the inverse transform method. In other words, generate \eqn{u_i ~ Unif( 0.0001, dlcol)}
-   and assign value \eqn{F^-1(u)} to \eqn{x_{i}} for \eqn{i = 1,...n_{0}} subjects with chemical values BDL.
+  A single chemical with missing values is imputed. The distribution for the interval-censored data \emph{chemcol} is assumed to be   lognormal and censored between 0 and \emph{DL}. After bootstrapping, the values BDL are imputed  using the inverse transform method. In other words, generate \eqn{u_i \sim Unif( 0.0001, dlcol)} and assign value \eqn{F^{-1}(u)} to \eqn{x_{i}} for \eqn{i = 1,...n_{0}} subjects with chemical values BDL.
 
 \code{impute.Lubin} performs the following:
 \enumerate{
-  \item Input arguments: chemical concentration, detection limit, and number of complete datasets.
+  \item Input arguments
   \item Obtain bootstrap samples.
   \item Generate weights vector.
   \item Use \code{\link[survival]{Surv}} function from Survival package to obtain survival object.
@@ -56,42 +51,37 @@ Lubin et al. (2004) evaluate several imputation approaches and show that a multi
   \item Sample from the lognormal distribution to obtain the imputed data value associated with
         the above uniform value.
   \item Repeat for all observations. }
-
-  Observations with missing covariate variables are ignored.
-  A matrix with n subjects and K imputed datasets is returned.
-}
-\note{
-Code was adapted from Erin E. Donahue's original translation of the SAS macro developed from the paper.
 }
 \examples{
-  ###Example 2: Simulation
-  #Let's apply the Lubin approach to the example simulated dataset.
-  #A seed of 202 is executed before each run for reproducibility
+#  Using abind::abind --possibly to impute multiple chemicals
+#   ###Example 2: Simulation
+  # Apply to an example simulated dataset.
+  # A seed of 202 is executed before each run for reproducibility.
   data(simdata87)
-  #Impute: 1 chemical
-  #No Covariates
-  set.seed( 202)
-  results_Lubin <- impute.Lubin (  simdata87$X.bdl[ ,1],   simdata87$DL[1],  K = 5)
+  # Impute: 1 chemical
+  # No Covariates
+  set.seed(202)
+  results_Lubin <- impute.Lubin(chemcol = simdata87$X.bdl[, 1], dlcol = simdata87$DL[1], K = 5)
   str(results_Lubin)
   summary(results_Lubin$imputed_values)
 
-  #1 Covariate
-  set.seed( 202)
-  sim.z1 <- impute.Lubin(simdata87$X.bdl[ ,1],   simdata87$DL[1],
-               K = 5, Z = simdata87$Z.sim[ , 1])
+  # 1 Covariate
+  set.seed(202)
+  sim.z1 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
+                         K = 5, Z = simdata87$Z.sim[, 1])
   summary(sim.z1$imputed_values)
 
-  #2 Covariates
-  set.seed( 202)
-  sim.z2<- impute.Lubin(simdata87$X.bdl[ ,1],   simdata87$DL[1],
-            K = 5, Z = simdata87$Z.sim[ , -2])
+  # 2 Covariates
+  set.seed(202)
+  sim.z2 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
+            K = 5, Z = simdata87$Z.sim[, -2])
   summary(sim.z2$imputed_values)
   summary(sim.z2$bootstrap_index)
 }
-\references{
-Lubin, J. H., Colt, J. S., Camann, D., Davis, S., Cerhan, J. R., Severson, R. K., … Hartge, P. (2004).
-Epidemiologic Evaluation of Measurement Data in the Presence of Detection Limits. Environmental Health Perspectives,
- 112(17), 1691–1696. https://doi.org/10.1289/ehp.7199
+\seealso{
+Other imputation: \code{\link{impute.boot}},
+  \code{\link{impute.multivariate.bayesian}},
+  \code{\link{impute.sub}}
 }
 \concept{imputation}
 \keyword{imputation}

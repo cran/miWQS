@@ -25,20 +25,20 @@
 
 # #' In makeJournalTables: Don't export.
 
-formatMSE <-   function(x, digits = 2, ... ){
-  #Warnings and Checks
+formatMSE <-   function(x, digits = 2, ...) {
+  # Warnings and Checks
   v <- x
-  print("Mean (MSE) " )
-  if(is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
+  print("Mean (MSE) ")
+  if (is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
   warning("Mean is assumed to be in 1st column; MSE in second.")
-  stopifnot( ncol(v) == 2 )
+  stopifnot(ncol(v) == 2)
 
-  #Format mean and mse, collapse into single line.
-  v.look <- format( v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
+  # Format mean and mse, collapse into single line.
+  v.look <- format(v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
   v.formatted <- rep(NA, nrow(v))
   names(v.formatted) <- rownames(v)
-  for(j in 1:nrow(v) ){
-    v.formatted[j]   <-  paste0( v.look[j, 1], " (", v.look[j, 2], ")" )
+  for (j in 1:nrow(v)) {
+    v.formatted[j]   <-  paste0(v.look[j, 1], " (", v.look[j, 2], ")")
   }
   return(as.matrix(v.formatted))
 }

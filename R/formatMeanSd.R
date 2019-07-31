@@ -1,6 +1,6 @@
 #  In makeJournalTables: Don't export.
 #  #' @title Formatting Means and Standard Deviations
-#or MSE
+# or MSE
 #  #'
 #  #' @name formatMeanSd
 #  #' @family format
@@ -43,21 +43,21 @@
 #  #'
 #  #'  In makeJournalTables: Don't export.
 
-formatMeanSd <- function(x, digits = 2, ... ){
-  #Warnings and Checks
+formatMeanSd <- function(x, digits = 2, ...) {
+  # Warnings and Checks
   v <- x
   warning("Formatting as Mean +- SD. Mean is assumed to be in 1st column; standard deviation in second. \n")
-  if(is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
-  stopifnot( ncol(v) == 2 )
+  if (is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
+  stopifnot(ncol(v) == 2)
 
-  #Format mean and sd's.
-  v.look <- format( v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
+  # Format mean and sd's.
+  v.look <- format(v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
 
-  #Combine v.look in character.
+  # Combine v.look in character.
   v.formatted <- rep(NA, nrow(v))
   names(v.formatted) <- rownames(v)
-  for(j in 1:nrow(v) ){
-    v.formatted[j]   <-  paste0 ( v.look[j, 1], " +- ",  v.look[j, 2], "," )
+  for (j in 1:nrow(v)) {
+    v.formatted[j]   <-  paste0 (v.look[j, 1], " +- ",  v.look[j, 2], ",")
   }
 
   return(as.matrix(v.formatted))

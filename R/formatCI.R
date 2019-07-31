@@ -42,27 +42,25 @@
 #   # the write.table or write.csv functions.
 #   }
 
-# In makeJournalTables: Don't export.
+formatCI <- function(x, digits = 2,  ...) {
+  v <- x  # let v be a matrix, not a vector.
 
-formatCI <- function(x, digits = 2,  ... ) {
-  v <- x  #let v be a matrix, not a vector.
-
-  #Warnings and Checks
+  # Warnings and Checks
   warning("Matrix with columns mean, lower, upper in order.")
-  if(is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
-  stopifnot( ncol(v) == 3)
+  if (is.character(v) | is.numeric(v)) {  v <- as.matrix(v)}
+  stopifnot(ncol(v) == 3)
 
-  #Format the mean(m), lower(l), and upper(u); then combine in one label.
-  m <-  formatC (v[ ,1],  format = "f", digits = digits, ...)
-  l <-  formatC (v[ ,2],  format = "f", digits = digits, ...)
-  u <-  formatC (v[ ,3],  format = "f", digits = digits, ...)
-  d <- data.frame( CI.lab = paste0(  m,  " (", l, ", ", u, ")" ) )
+  # Format the mean(m), lower(l), and upper(u); then combine in one label.
+  m <-  formatC (v[, 1],  format = "f", digits = digits, ...)
+  l <-  formatC (v[, 2],  format = "f", digits = digits, ...)
+  u <-  formatC (v[, 3],  format = "f", digits = digits, ...)
+  d <- data.frame(CI.lab = paste0(m,  " (", l, ", ", u, ")"))
 
-  #Reassign rownames of v to output.
-  if( !is.null(dimnames(v)[[1]])) {
+  # Reassign rownames of v to output.
+  if (!is.null(dimnames(v)[[1]])) {
     dimnames(d)[[1]] <- dimnames(v)[[1]]
   }
-  return( d )
+  return(d)
 }
 
 # Although formatCI() is not a realization for format(), the parameter "x" needs to be used instead of "v"

@@ -60,23 +60,23 @@
 # #'
 
 
-#save.image("is_wholenumber_fn.RData")
+# save.image("is_wholenumber_fn.RData")
 
-is.integer <- function(x, tol = .Machine$double.eps^0.5){
-   return( abs(x-round(x))<tol )
+is.integer <- function(x, tol = .Machine$double.eps^0.5) {
+   return(abs(x - round(x)) < tol)
 }
 
 
 # #'@rdname is.integer
-is.wholenumber <- function(x, tol = .Machine$double.eps^0.5){
-  x>-1 &&  is.integer(x, tol)
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
+  x > -1 &&  is.integer(x, tol)
 }
 
 
 
 # #'@rdname is.integer
-is.naturalnumber <- function(x, tol = .Machine$double.eps^0.5){
-  x>0 && is.integer(x, tol)
+is.naturalnumber <- function(x, tol = .Machine$double.eps^0.5) {
+  x > 0 && is.integer(x, tol)
 }
 
 
@@ -85,13 +85,10 @@ is.even <- function(x) { ifelse(is.integer(x), x %% 2 == 0,  NA) }
 is.odd <- function(x) {  ifelse(is.integer(x),  x %% 2 != 0, NA) }
 
 # #'@rdname is.integer
-fact<-function(t, tol = .Machine$double.eps^0.5) {
-    if(is.wholenumber(t, tol) ){
-      return( exp(prod(log(1:t))) )
+fact <- function(t, tol = .Machine$double.eps^0.5) {
+    if (is.wholenumber(t, tol)) {
+      return(exp(prod(log(1:t))))
     } else {
-      return(NA)  #does not exist if not a whole number
-    } #end wholenumber
+      return(NA)  # does not exist if not a whole number
+    } # end wholenumber
   }
-
-
-

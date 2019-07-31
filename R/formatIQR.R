@@ -37,26 +37,26 @@
 # #' In makeJournalTables: Don't export.
 
 
-formatIQR <- function(x, format.type = c("2","1"), digits = 2, ... ){
-  #Checking...
+formatIQR <- function(x, format.type = c("2", "1"), digits = 2, ...) {
+  # Checking...
   v <- x
   format.type <- match.arg  (format.type)
-  v <- if( is.character(v) | is.numeric(v)) {  as.matrix(v) }  #makes a 3 x 1 matrix
-  stopifnot( nrow(v) == 3)
+  v <- if (is.character(v) | is.numeric(v)) {  as.matrix(v) }  # makes a 3 x 1 matrix
+  stopifnot(nrow(v) == 3)
   # if(is.null( rownames(v) ) ) {
   warning("Assuming v is a matrix with 1st, 2nd, 3rd quantiles in order.");
-  rownames(v) <- c( "25%", "50%", "75%")
+  rownames(v) <- c("25%", "50%", "75%")
   # }
 
-  v.look <- format( v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
+  v.look <- format(v, trim = TRUE, digits = digits, drop0trailing = FALSE,  ...)
   v.formatted <- rep(NA, ncol(v))
   names(v.formatted) <- colnames(v)
 
-  for(j in 1:ncol(v) ){
-    if(format.type == "2"){ #median(Q75-Q25)
-      v.formatted[j]   <- paste0( v.look[2, j], " (" , v.look[3, j], "-", v.look[1, j],")" )
-    } else { #if(format.type == "1"){  #median( Q1, Q3)
-      v.formatted[j]   <- paste0( v.look[2, j], " (" , v.look[1, j], ", ", v.look[3, j], ")" )
+  for (j in 1:ncol(v)) {
+    if (format.type == "2") { # median(Q75-Q25)
+      v.formatted[j]   <- paste0(v.look[2, j], " (", v.look[3, j], "-", v.look[1, j], ")")
+    } else { # if(format.type == "1"){  #median( Q1, Q3)
+      v.formatted[j]   <- paste0(v.look[2, j], " (", v.look[1, j], ", ", v.look[3, j], ")")
       # } else{
       #   stop("Incorrect Format Type. Please respecify")
       # }

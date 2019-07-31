@@ -2,63 +2,49 @@
 % Please edit documentation in R/impute_univariate_bayesian_imputation_stage1.R
 \name{impute.univariate.bayesian.mi}
 \alias{impute.univariate.bayesian.mi}
-\title{Univariate Bayesian Multiple Imputation}
+\title{Univariate Bayesian Imputation}
 \usage{
-impute.univariate.bayesian.mi(X, DL, T = 10000, n.burn = 1, K = 5,
+impute.univariate.bayesian.mi(X, DL, T = 1000L, n.burn = 1L, K = 5L,
   verbose = FALSE)
 }
 \arguments{
-\item{X}{A numeric matrix or data frame of chemical concentration levels with n subjects and c chemicals to impute. Missing values are indicated by NA's.}
+\item{X}{A numeric vector, matrix, or data-frame of chemical concentration levels with n subjects and C chemicals to be imputed. Missing values are indicated by NA's.  Ideally, a numeric matrix.}
 
-\item{DL}{The detection  limit for each chemical as a numeric vector. Vector must be complete (no NA's); any chemical that has a missing detection limit is not imputed.}
+\item{DL}{The detection limit for each chemical as a numeric vector with length equal to C chemicals. Vector must be complete (no NA's); any chemical that has a missing detection limit is not imputed. If DL is a data-frame or matrix with 1 row or 1 column, it is forced as a numeric vector.}
 
-\item{T}{Number of total iterations for Gibbs Sampler. (Suggestion for debugging: 100).}
+\item{T}{Number of total iterations for the Gibbs Sampler. Defaults: 1000L.}
 
-\item{n.burn}{Length of burn-in, i.e. number of iterations to discard at the beginning.
-Default: 1. <no burning>}
+\item{n.burn}{The burn-in, which is the number of initial iterations to be discarded. Generally, the burn-in can be quite large as the imputed chemical matrices, X.imputed, are formed from the end of the chain -- the lowest state used is \eqn{T - 10*K}. Default is 1L (no burn-in).}
 
-\item{K}{The number of imputed datasets to generate.  Default: 5.}
+\item{K}{A natural number of imputed datasets to generate. Defaults: 5L.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in
-the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
 }
 \value{
-A list that contains: ** Most important.
-\itemize{
-   \item ** 1. X.imputed: An array of n subjects x c chemicals x K imputed sets on the normal scale.
-   \item 2-4. mu.post, sigma.post, log.x.miss: The posterior parameters from MCMC chain is saved
-          as a list of mcmc objects (in \pkg{coda}) of length # of chemicals. (A list was chosen since the
-          number of missing values n0 might be different from chemical to chemical). See
-          \code{\link[coda]{mcmc}}. \describe{
-            \item{mu.post}{For each element of list (or for each chemical): the posterior MCMC
-               chain of the mean, saved as T x 1 coda::mcmc object.}
-            \item{sigma.post}{For each element of list (or for each chemical): the posterior MCMC
-               chain for the standard deviation, sigma, saved as T x 1 coda::mcmc object.}
-            \item{log.x.miss}{For each element of list, T x \eqn{n_{0j}} matrix of the log of the
-                imputed missing values is saved as coda::mcmc object. \eqn{n_{0j}} is the # of
-                missing values for the jth chemical.}
-                }
-   \item 5. convgd.table: A dataframe summarizing convergence with c rows and columns of the
-             Gelman-Rubin statistic and whether the point estimate is less than 1.1. Summary is also
-             printed to the screen.
-   \item 6. number.no.converged: A check and summary of convgd.table. Total number of parameters that fail to indicate convergence of MCMC chains using Gelman-Rubin statistic. Should be 0.
-   \item 7. indicator.miss:  A check; a vector of indicator variables where the number of
-             missing values are above detection limit. Should be a vector of 0's.
-   }
+Returns a list that contains: ** Most important. \describe{
+   \item{X.imputed}{** An array of n subjects x C chemicals x K imputed sets on the normal scale.}
+   \item{mu.post}{A list with length equal to the number of chemicals,  where each element of list (or for each chemical) is the posterior MCMC chain of the mean is saved as T x 1 \code{\link[coda]{mcmc}} object (in \pkg{coda}).}
+   \item{sigma.post}{A list with length equal to the number of chemicals, where each element of list (or for each chemical) is the posterior MCMC chain of the standard deviation, sigma, saved as T x 1 \strong{coda::mcmc} object.}
+   \item{log.x.miss}{A list with length equal to the number of chemicals, where each element of list is a T x \eqn{n_{0j}} matrix of the log of the  imputed missing values, saved as \strong{coda::mcmc} object. \eqn{n_{0j}} is the # of missing values for the jth chemical.}
+   \item{convgd.table}{A data-frame summarizing convergence with C rows and columns of the Gelman-Rubin statistic and whether the point estimate is less than 1.1. Summary is also printed to the screen.}
+   \item{number.no.converged}{A check and summary of convgd.table. Total number of parameters that fail to indicate convergence of MCMC chains using Gelman-Rubin statistic. Should be 0.}
+   \item{indicator.miss}{ A check; a vector of indicator variables where the number of missing values are above detection limit. Should be a vector of 0's.}
+}
 }
 \description{
-Given interval-censored data between 0 and different detection limits (\emph{DL}),
-             \code{impute.univariate.bayesian.mi} generates K complete datasets using Univariate
-              Bayesian Multiple Imputation.
+Given interval-censored data between 0 and different detection limits (\emph{DL}), \code{impute.univariate.bayesian.mi} generates K complete datasets using Univariate Bayesian Imputation.
 }
 \details{
-This is the univariate Bayesian multiple imputation approach. Currently, only one chemical is imputed at a time. Both the observed and missing data are assumed to follow
- \deqn{  log( X_{ij} )  \sim^{indep} Norm(\mu_j , \sigma^2_j) ,   i=1,...n ; j=1,...c }
+This is the Univariate Bayesian Imputation approach. Only one chemical is imputed at a time. Both the observed and missing data are assumed to follow
+ \deqn{ log( X_{ij} )  \sim^{indep} Norm(\mu_j , \sigma^2_j) ,   i=1,...n ; j=1,...C }
 Subjects and chemicals are assumed to be independent. Jeffery's priors are  placed on mean and
-variance for each chemical. Posterior simulation uses data augmentation approach. Convergence is
+variance for each chemical. Posterior simulation uses data augmentation approach. Initial values were
+selected as convergence is
 checked using Gelman-Rubin statistics. Given sample convergence, the K sets of posterior missing
 values come from the burned Markov chains thinned by K. The imputed values are then substituted
 for the missing data, forming K complete datasets.
+
+Each of the posterior parameters from MCMC chain--mu.post, sigma.post, and log.x.miss--is saved as a list of mcmc objects (in \pkg{coda}) of length # of chemicals. (A list was chosen since the number of missing values n0 might be different from chemical to chemical).
 }
 \note{
 No seed is set in this function. Because bootstraps and MCMC are random, a seed should be set before every use.
@@ -69,12 +55,12 @@ No seed is set in this function. Because bootstraps and MCMC are random, a seed 
 data(simdata87)
 set.seed(472195)
 result.imputed <- impute.univariate.bayesian.mi(
-   X = simdata87$X.bdl[ , 1:6], DL = simdata87$DL[1:6],
+   X = simdata87$X.bdl[, 1:6], DL = simdata87$DL[1:6],
    T = 1000, n.burn = 50,  K = 2)
-#Did the MCMC converge? A summary of Gelman Statistics is provided.
+# Did the MCMC converge? A summary of Gelman Statistics is provided.
 summary(result.imputed$convg.table)
-#Summary of Impouted Values
+# Summary of Impouted Values
 apply(result.imputed$X.imputed, 2:3, summary)
 }
-\concept{imputation'}
+\concept{imputation Bayesian}
 \keyword{imputation}

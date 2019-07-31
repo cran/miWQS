@@ -1,4 +1,4 @@
-#'Simulated Dataset 87
+#' Simulated Dataset 87
 # Date: July 20, 2018
 #'
 #' @docType data
@@ -6,24 +6,29 @@
 #' @usage data(simdata87)
 #' @keywords datasets
 #'
-#'@description  The 87th dataset from the simulation study with 10 percent of observations were below the detection limit (BDL). The data of the fourteen chemicals and a binary outcome of childhood leukemia will be simulated as follows. The chemicals will be jointly modelled using \eqn{log(X) \sim MVN_{c}( \mu=log(GM), \Sigma=S)} where the geometric mean (GM) and the sample covariance (S) of logs of the 14 chemicals from a real epidemiological dataset. BDLs were created using the bottom 10th percentile of the true data. Three covariates are considered:  the child’s age, the child’s sex (Male/Female), and the child’s ethnicity/race (White, Non-Hispanic White, and Other). After creating a model matrix, male white newborns (age = 0) serves as the  reference. The age is simulated from a normal with mean of 3.78 and standard deviation of 1.85 truncated between 0 and 8. The categorical variables are simulated from independent binomial distributions.  The outcome will be simulated using a logistic WQS model using the complete data:                                              \deqn{logit(\mu_{i}) = -1.25 + log(1.75)*WQS_{i} + 0.032*z_{age}+ -0.0285*z_{sex} + 0.540*z_{His} + 0.120*z_{other} }
-#'where \deqn{ WQS_{i}= \Sigma_{j=1}^{c}(w_{j}*x_{ijq}) }
+#' @description  The 87th dataset from the simulation study with 10 percent of observations were below the detection limit (BDL) based of a real epidemiological dataset. Out of 1000 subjects, fourteen correlated chemicals are completely observed (in X.true). In this simulation design, each chemical was simulated from independent normal distributions.
+#'
+#' BDLs were created using the bottom 10th percentile of the true data. Three covariates are considered:  the child’s age, the child’s sex (Male/Female), and the child’s ethnicity/race (White, Non-Hispanic White, and Other). After creating a model matrix, male white newborns (age = 0) serves as the  reference. The age is simulated from a normal with mean of 3.78 and standard deviation of 1.85 truncated between 0 and 8. The categorical variables are simulated from independent binomial distributions.  The outcome will be simulated using a logistic WQS model using the complete data:
+#' \deqn{logit(\mu_{i}) = -1.25 + log(1.75)*WQS_{i} + 0.032*z_{age}+ -0.0285*z_{sex} + 0.540*z_{His} + 0.120*z_{other} }
+#' where \deqn{ WQS_{i}= \Sigma_{j=1}^{c}(w_{j}*q_{ij}) }
+#'
+#'  with four of the 14 weights \eqn{w_j}'s being 0.25 and the rest 0. The \eqn{q_ij} refers to the quantile score of the \emph{jth} chemical in the \emph{ith} subject.
 #'
 #' @format  A list that contains: \itemize{
 #'   \item y.scenario: a binary outcome (1 = case, 0 = control)
 #'   \item X.true: 14 chemicals; complete data.
 #'   \item X.bdl: 14 chemicals with NA's subbed for the bottom 10th percentile of the true values.
 #'   \item DL: The detection limit. Here, found to be the 10th percentile of X.true
-#'   \item n0: The number of non-detects.
-#'   \item delta: whether the chemical is observed (1) or not (0)
-#'   \item Z.sim: A dataframe of covariates consisting of: \describe{
-#'          \item{ch_ageref}{A continuous covariate of child's age , simulated using normal with
-#'           mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of leukemia}
-#'          \item{sex}{Binary variable child's sex, simulated using the proportion of females (0.42) by binomial distribution.}
-#'          \item{int_ch_ethnicity}{Two indicator variables of child's race/ethnicity, sampled from
-#'                independent binomial distributions  (proportion of Hispanic: 0.33; proportion of Other: 0.23)
-#'                }}
-#'   \item time: the time it took to simulate the data. }
+#'   \item n0: A vector of length 14 indicating the number of non-detects.
+#'   \item delta: A vector of length 14 indicating whether the chemical is observed (1) or not (0)
+#'   \item Z.sim: A data-frame of covariates consisting of: \itemize{
+#'          \item Age: A continuous covariate of child's age , simulated using normal with
+#'           mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of leukemia.
+#'          \item Female: Binary variable child's sex, simulated using the proportion of females (0.42) by binomial distribution.
+#'          \item Hispanic, Non-Hispanic_Others: Two indicator variables of child's race/ethnicity, sampled from independent binomial distributions  (proportion of Hispanic: 0.33; proportion of Other: 0.23).
+#'          }
+#'   \item time: the time it took to simulate the data.
+#'   }
 #'
 #' @references
 #'  Ward, M. H., Colt, J. S., Metayer, C., Gunier, R. B., Lubin, J., Crouse, V., … Buffler, P. A. (2009). Residential Exposure
@@ -31,10 +36,10 @@
 #'  https://doi.org/10.1289/ehp.0900583
 
 #  <both my papers here>
-#APA format
+# APA format
 #'
 #' @examples
-#' simdata87 <- data( simdata87)
+#' simdata87 <- data(simdata87)
 NULL
 
 # l.data previously
@@ -58,5 +63,3 @@ NULL
    # \item Chemical Weights (w)
    #       x1 x2 x3 x4 x5   x6    x7    x8  x9   x10  x11   x12    x13  x14
    #       0  0  0  0  0    0.25  0.25  0   0    0    0.25  0.25   0    0
-
-

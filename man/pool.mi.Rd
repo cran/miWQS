@@ -4,7 +4,7 @@
 \alias{pool.mi}
 \title{Pooling Multiple Imputation Results}
 \usage{
-pool.mi(to.pool, n = NULL, method = c("smallsample", "rubin"),
+pool.mi(to.pool, n = 999999, method = c("smallsample", "rubin"),
   alpha = 0.05, verbose = FALSE)
 }
 \arguments{
@@ -18,14 +18,12 @@ The rownames of to.pool are kept in the results.}
 If method = "smallsample" (the default) then the Barnard-Rubin adjustment for small
 degrees of freedom is used. Otherwise, the method from Rubin (1987) is used.}
 
-\item{alpha}{Type I error used in forming confidence interval. Default: 0.05.}
+\item{alpha}{Type I error used to form the confidence interval. Default: 0.05.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in
-the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
 }
 \value{
-A dataframe consisting:
-\describe{
+A data-frame is returned with the following columns: \describe{
 \item{pooled.mean}{The pooled univariate estimate, Qbar, formula (3.1.2) Rubin (1987).}
 \item{pooled.total.se}{The total standard error of the pooled estimate, formula (3.1.5) Rubin (1987).}
 \item{pooled.total.var}{The total variance of the pooled estimate, formula (3.1.5) Rubin (1987).}
@@ -41,51 +39,48 @@ A dataframe consisting:
 }
 }
 \description{
-Combine multiple parameter estimates (as used in MI) across the K imputed complete
-             datasets using Rubin 1996 / 1987 formulas, including:
-            calculating a pooled mean, standard error, missing data statistics, confidence intervals, and p-values,
-            if we assume that each complete-data estimate is normally distributed.
+Combine multiple parameter estimates (as used in MI) across the K imputed datasets using Rubin 1996 / 1987 formulas, including: calculating a pooled mean, standard error, missing data statistics, confidence intervals, and p-values.
 }
 \details{
-The input is an array with p rows referring to the number of parameters to be combined. An estimate
+Stage 3 of Multiple Imputation. The input is an array with p rows referring to the number of parameters to be combined. An estimate
 and within standard error forms the two columns of the array, which can be easily be taken as the
 first two columns of the coefficients element of the summary of a glm/lm object. The last
 dimension is the number of imputations, K. See dataset \code{wqs.pool.test} as an example.
 
-Calculates the statistics of an imputed dataset including the pooled mean, total standard error,
-relative increase in variance, fraction of missing information, and approximate 95\% Confidence
-Interval and P-value based on the t-distribution approximation.
+Uses Rubin's rules to calculate the statistics of an imputed dataset including: the pooled mean, total standard error,  a relative increase in variance, fraction of missing information, and 95\% Confidence Interval and P-value based on the t-distribution approximation.
+
+Assumes that each complete-data estimate is normally distributed.
 }
 \note{
-Modified the \code{\link[mice]{pool.scalar}} (version R 3.4) in the \pkg{mice} package to
-       handle multiple parameters at once in an array and combine them.
-       Similar to norm::mi.inference(), but the small-sample adjustment is missing.
+Modified the \code{\link[mice]{pool.scalar}} (version R 3.4) in the \pkg{mice} package to handle multiple parameters at once in an array and combine them. Similar to \code{\link[norm]{mi.inference}} in the \pkg{norm} package, but the small-sample adjustment is missing.
 }
 \examples{
-####Example 1: Sample Dataset 87, using 10\% BDL Scenario
+#### Example 1: Sample Dataset 87, using 10\% BDL Scenario
 data(wqs.pool.test)
-#Example of the \\italics{to.pool} argument
+# Example of the `to.pool` argument
 head(wqs.pool.test)
 
-#Pool WQS results and decrease in order of weights.
+# Pool WQS results and decrease in order of weights.
 wqs.results.pooled <-   pool.mi(wqs.pool.test, n = 1000)
-weight.dec <- c( order( wqs.results.pooled$pooled.mean[1:14], decreasing = TRUE), 15:16)
-wqs.results.pooled <-  wqs.results.pooled[ weight.dec, ]
+weight.dec <- c(order(wqs.results.pooled$pooled.mean[1:14], decreasing = TRUE), 15:16)
+wqs.results.pooled <-  wqs.results.pooled[weight.dec, ]
 wqs.results.pooled
 
-#When there is 1 estimate (p = 1)
-a <-   pool.mi(wqs.pool.test[1, , , drop = FALSE], n = 1000)
+# When there is 1 estimate (p = 1)
+a <- pool.mi(wqs.pool.test[1, , , drop = FALSE], n = 1000)
 a
+# wqs.results.pooled["dieldrin", ]
 
-#For single imputation (K = 1):
-b<-   pool.mi(wqs.pool.test[ , , 1 , drop = FALSE], n = 1000)
+# For single imputation (K = 1):
+b <- pool.mi(wqs.pool.test[, , 1, drop = FALSE], n = 1000)
 b
 
-#Odds ratio and 95\% CI using the CLT.
-odds.ratio <- exp( wqs.results.pooled[15:16, c("pooled.mean", "CI.1", "CI.2")] )
+# Odds ratio and 95\% CI using the CLT.
+odds.ratio <- exp(wqs.results.pooled[15:16, c("pooled.mean", "CI.1", "CI.2")])
+## makeJournalTables :: format.CI( odds.ratio, trim = TRUE, digits = 2, nsmall = 2)
 odds.ratio
 
-
+#  The mice package is suggested for the examples, but not needed for the function.
 }
 \references{
 Rubin, D. B. (1987). Multiple Imputation for nonresponse in surveys. New York: Wiley.
@@ -94,5 +89,4 @@ Rubin, D. B. (1996). Multiple Imputation After 18+ Years. Journal of the America
 
 Barnard, J., & Rubin, D. B. (1999). Small-Sample Degrees of Freedom with Multiple Imputation. Biometrika, 86(4), 948–955.
 }
-\keyword{imputation}
 \keyword{pool}
