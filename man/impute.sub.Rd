@@ -11,28 +11,31 @@ impute.sub(X, DL, verbose = FALSE)
 
 \item{DL}{The detection limit for each chemical as a numeric vector with length equal to C chemicals. Vector must be complete (no NA's); any chemical that has a missing detection limit is not imputed. If DL is a data-frame or matrix with 1 row or 1 column, it is forced as a numeric vector.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
 \value{
 A n x C matrix where the BDL values of each chemical are substituted by its detection limit/sqrt(2).
 }
 \description{
-Imputes the values below the detection limit with 1/sqrt(2) of that's chemical's detection limit.
+The values below the detection limit for each chemical are substituted by its detection limit/sqrt(2).
 }
 \details{
-A matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider chemical concentrations \emph{X} with each being partially observed.
+A n x C matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider chemical concentrations \emph{X} with each being partially observed.
 }
 \examples{
 data("simdata87")
+
 X.sub <- impute.sub(X = simdata87$X.bdl, DL = simdata87$DL, verbose = TRUE)
-apply(X.sub, 2, quantile, c(0, 0.02, 0.04, 0.09, 0.25))
-# Compare against X.true
-round(apply(simdata87$X.true, 2, quantile, c(0.01, 0.05, 0.09, 0.25, 0.5, 0.8, 1)), 5)
+
+# Compare substituted imputed data against the truth
+probs <- c(0.01, 0.05, 0.09, 0.25, 0.5, 0.8, 1)
+apply(X.sub, 2, quantile, probs)
+round(apply(simdata87$X.true, 2, quantile, probs), 5)
+
 }
 \seealso{
 Other imputation: \code{\link{impute.Lubin}},
-  \code{\link{impute.boot}},
-  \code{\link{impute.multivariate.bayesian}}
+  \code{\link{impute.boot}}
 }
 \concept{imputation}
 \keyword{imputation}

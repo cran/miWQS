@@ -10,19 +10,19 @@ make.quantile.matrix(X, n.quantiles, place.bdls.in.Q1 = if (anyNA(X))
 \arguments{
 \item{X}{A numeric matrix. Any missing values are indicated by NA's.}
 
-\item{n.quantiles}{An integer to specify the number of quantiles to be used categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.}
+\item{n.quantiles}{An integer to specify the number of quantiles in categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.}
 
-\item{place.bdls.in.Q1}{Logical; if TRUE or X has any missing values, missing values in X are placed in the first quantile of the weighted sum.  Otherwise, the data is complete (no missing data) and the data is split equally into quantiles.}
+\item{place.bdls.in.Q1}{Logical; if TRUE or X has any missing values, missing values in X are placed in the first quantile of the weighted sum.  Otherwise, the data is complete (no missing data) and the data is equally split into quantiles.}
 
 \item{...}{Further arguments passed to or from other methods. Currently has no effect.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
 \value{
 A matrix of quantiles with rows = nrow(X) and with columns = n.quantiles.
 }
 \description{
-Scores quantiles from a numeric matrix. If the matrix has values missing between zero and some threshold, say the detection limit, all these missing values  (indicated by NA) go into the first quantile.
+Scores quantiles from a numeric matrix. If the matrix has values missing between zero and some threshold, say the detection limit, all these missing values  (indicated by NA) are placed into the first quantile.
 }
 \details{
 Produces sample quantiles for a matrix \emph{X} using \code{\link[stats]{quantile}}() function. Names are kept and the 7th quantile algorithm is used. As ties between quantiles may exist, \code{\link[base]{.bincode}}() is used.
@@ -48,6 +48,7 @@ summary(q2)
 
 Other wqs: \code{\link{analyze.individually}},
   \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
+  \code{\link{estimate.wqs.formula}},
   \code{\link{estimate.wqs}}, \code{\link{plot.wqs}},
   \code{\link{print.wqs}}
 }

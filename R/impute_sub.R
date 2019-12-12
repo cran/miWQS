@@ -3,9 +3,9 @@
 #' @family imputation
 #' @keywords imputation
 #'
-#' @description Imputes the values below the detection limit with 1/sqrt(2) of that's chemical's detection limit.
+#' @description The values below the detection limit for each chemical are substituted by its detection limit/sqrt(2).
 #'
-#' @details A matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider chemical concentrations \emph{X} with each being partially observed.
+#' @details A n x C matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider chemical concentrations \emph{X} with each being partially observed.
 #'
 #' @inheritParams impute.multivariate.bayesian
 #' @return A n x C matrix where the BDL values of each chemical are substituted by its detection limit/sqrt(2).
@@ -14,10 +14,14 @@
 
 #' @examples
 #' data("simdata87")
+#'
 #' X.sub <- impute.sub(X = simdata87$X.bdl, DL = simdata87$DL, verbose = TRUE)
-#' apply(X.sub, 2, quantile, c(0, 0.02, 0.04, 0.09, 0.25))
-#' # Compare against X.true
-#' round(apply(simdata87$X.true, 2, quantile, c(0.01, 0.05, 0.09, 0.25, 0.5, 0.8, 1)), 5)
+#'
+#' # Compare substituted imputed data against the truth
+#' probs <- c(0.01, 0.05, 0.09, 0.25, 0.5, 0.8, 1)
+#' apply(X.sub, 2, quantile, probs)
+#' round(apply(simdata87$X.true, 2, quantile, probs), 5)
+#'
 impute.sub <- function(X, DL, verbose = FALSE) {
     X.sub <- X   # Copy BDL Matrix
     C <- ncol(X)

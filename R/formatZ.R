@@ -37,11 +37,6 @@
 formatZ <- function(n, ColPct, digits = 1, nsmall = 0, ...) {
   # Check the function
   stopifnot(length(n) == length(ColPct))
-  # x <- chk_formatz_fn(cbind(n, ColPct))
-
-  # Assign
-  # n <- x[ ,1]
-  # ColPct <- x[ ,2]
 
   # Format...
   pct <- paste0("(", format(ColPct, trim = TRUE, digits = digits, nsmall = nsmall, ...), "%)", ",")
@@ -50,38 +45,8 @@ formatZ <- function(n, ColPct, digits = 1, nsmall = 0, ...) {
   return(A)
 }
 
-# Check the function
-chk_formatz_fn <- function(x) {
-  # x can be a list, matrix, or data frame. Convert these to a dataframe.
-  if (is.list(x) & length(x) == 2) {
-    x <- data.frame(n = x[[1]], ColPct = x[[2]])
-    # print(str(x))
-  } else { if (is.matrix(x) | is.data.frame(x)) {
-    x <- as.data.frame(x)
-  } else {
-    # All other classes cannot be combined.
-    stop("Frequencies and ColPct cannot be combined since one is missing or is not numeric ",
-            call. = FALSE)
-  }}
-
-  # print(str(x))
-
-  # x may only have 2 columns
-  warning("Frequencies (n) is assumed to be in 1st column; column percentages (ColPct) in second.",
-          call. = FALSE)
-  stopifnot(ncol(x) == 2)
-
-  # The columns of x must be numeric.
-  a <- ifelse(apply(x, 2, class) == "numeric",
-               "",
-               stop("Frequencies and ColPct cannot be combined since at least one is not numeric",
-                    call. = FALSE)
-  )
-
-  return(x)
-}
-
 # Archive
+# Used to combine n and colPct into a matrix, x. But removed it from the function.
 ##   #'@param x  A data frame or a matrix with 2 columns or a list with 2 entries in the following order:
 #   #'             a frequency vector, n, and a column percentage vector, ColPct. A warning is produced to ensure
 #   #'             this is followed. Names are not necessary, but helpful.

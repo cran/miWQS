@@ -26,11 +26,12 @@
 #' )
 #' coef(Wa)
 #' @importFrom stats coef
+#' @importFrom methods is
 #' @export
 
 coef.wqs <- function(object, ...) {
   # Check if
-  if (class(object) == "wqs") {
+  if (is(object,"wqs")) {
     coef(object$fit, ...) # generic function in stats.
   } else {
     stop("object is not from class `wqs`.")

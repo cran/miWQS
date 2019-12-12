@@ -2,10 +2,11 @@
 title: "README: miWQS"
 output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{tmp}
+  %\VignetteIndexEntry{README}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 <!--- You'll still need to render `README.pdf` regularly, to keep `README.md` up-to-date.-->
 
 ```{r, include = FALSE}
@@ -30,8 +31,10 @@ knitr::include_graphics("Decision_Tree_In_Using_miWQS_Package.pdf")
 
 You can install the released version of miWQS from [CRAN](https://CRAN.R-project.org) with:
 
-``` r
+```{r eval = FALSE}
 install.packages("miWQS")
 ```
 
+## Example
 
+Please see the vignette (that will soon be published) for a detailed step-by-step guide in using this package.

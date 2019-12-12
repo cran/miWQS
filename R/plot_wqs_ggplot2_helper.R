@@ -3,7 +3,7 @@
 #' @family wqs
 #' @keywords wqs
 #'
-#' @description  Plots a WQS object as three histograms of the weights, the overall chemical effect, and WQS
+#' @description  Plots a WQS object producing three histograms of the weights, the overall chemical effect, and WQS
 #'  across bootstraps. These histograms are returned as \pkg{ggplot2} objects.
 #'
 #' @details
@@ -25,15 +25,13 @@
 #  #'@param hist.freq.max      DEFUNCT. maximum frequency for histogram of weights. Should be same across all chemicals.
 #' @param ...                  DEFUNCT. Arguments no longer passed to ggsave(). This argument currently has no effect.
 #'
-#' @return A list of histograms  \describe{
-#'  \item{hist.weights}{A list of \pkg{ggplot2} histogram of weights across the bootstrap. Each component consists of a histogram with a weight estimate}
+#' @return A list of histograms \describe{
+#'  \item{hist.weights}{A list of \pkg{ggplot2} histogram of weights across the bootstrap. Each component consists of a histogram with a weight estimate.}
 #'  \item{hist.beta1}{A histogram of the overall chemical mixture effect. This parameter is constrained to be all positive if the b1.pos argument in estimate.wqs() is TRUE.; otherwise, it is FALSE.}
 #'  \item{hist.WQS}{A histogram of the overall chemical sum, WQS. Due to constraints, it is always between 0 and \emph{n.quantiles-1}.}
 #'  }
 #'
-# TEMP #'@importFrom makeJournalTables is.integer is.wholenumber multiplot
 #' @import ggplot2
-#' @import grid
 #' @importFrom tidyr gather
 #' @export
 #'
@@ -41,9 +39,10 @@
 #' # Use simulated dataset and set seed for reproducibility.
 #' data(simdata87)
 #' set.seed(23456)
-#' Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:9],
+#' Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
 #'                   B = 10, family = "binomial")
 #' plot(Wa)
+#'
 plot.wqs <- function(x, filename = "myfile",  ...) {   # hist.weight.max = 1, hist.freq.max = 80,
     W <- x      # Let W be WQS object.
     if (length(grep(".png", filename)) > 0) {stop("Remove \".png \" from filename")}
@@ -78,32 +77,3 @@ plot.wqs <- function(x, filename = "myfile",  ...) {   # hist.weight.max = 1, hi
 
   return(list(hist.weights = hist.weights, hist.beta1 = hist.beta1, hist.WQS = hist.WQS))
 }
-
-
-
-
-
-# c <- W$c   #Number of chemicals
-# Plot 1 old code.
-# If c <=9, create one plot.
-# if( c < 10){
-#
-# } else { #Create multiple plots; one each for a multiple of 9.
-#   times<-ceiling(c/9);
-#   hist.weights <- vector( mode = "list", length = times)
-#   for(j in 1:times){
-#     start<- (9*(j-1)+1)   #Start at Number 1,10,1 ...
-#     end<- min( 9*j , c)   #End at multiple of 9 (or c if not exact multiple)
-#     #Plot
-#     to.plot <- tidyr::gather( train.wts[ , start:end, drop = FALSE])
-#     hist.weights[[j]] <- ggplot( to.plot, aes(to.plot$value)) +
-#       geom_histogram(bins = 10, fill = "black") + theme_bw() +
-#       facet_wrap(~ key, scales = 'fixed') +
-#       xlab( "weight") + ggtitle( "Chemical Weight Estimates Histogram")
-#     #Save Plot
-#     ggsave( filename  = paste0(filename, "_weight-", LETTERS[j], ".png"), path = NULL) #, ...)
-#     #Create new plot
-#     grid::grid.newpage()
-#   }
-# }
-#

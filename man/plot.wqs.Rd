@@ -14,14 +14,14 @@
 \item{...}{DEFUNCT. Arguments no longer passed to ggsave(). This argument currently has no effect.}
 }
 \value{
-A list of histograms  \describe{
- \item{hist.weights}{A list of \pkg{ggplot2} histogram of weights across the bootstrap. Each component consists of a histogram with a weight estimate}
+A list of histograms \describe{
+ \item{hist.weights}{A list of \pkg{ggplot2} histogram of weights across the bootstrap. Each component consists of a histogram with a weight estimate.}
  \item{hist.beta1}{A histogram of the overall chemical mixture effect. This parameter is constrained to be all positive if the b1.pos argument in estimate.wqs() is TRUE.; otherwise, it is FALSE.}
  \item{hist.WQS}{A histogram of the overall chemical sum, WQS. Due to constraints, it is always between 0 and \emph{n.quantiles-1}.}
  }
 }
 \description{
-Plots a WQS object as three histograms of the weights, the overall chemical effect, and WQS
+Plots a WQS object producing three histograms of the weights, the overall chemical effect, and WQS
  across bootstraps. These histograms are returned as \pkg{ggplot2} objects.
 }
 \details{
@@ -39,13 +39,15 @@ Plots no longer saved automatically; please save manually using \code{\link[ggpl
 # Use simulated dataset and set seed for reproducibility.
 data(simdata87)
 set.seed(23456)
-Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:9],
+Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
                   B = 10, family = "binomial")
 plot(Wa)
+
 }
 \seealso{
 Other wqs: \code{\link{analyze.individually}},
   \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
+  \code{\link{estimate.wqs.formula}},
   \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{print.wqs}}

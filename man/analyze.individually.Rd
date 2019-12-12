@@ -8,7 +8,7 @@ analyze.individually(y, X, Z = NULL, family = c("gaussian", "binomial",
   "poisson"), offset = NULL)
 }
 \arguments{
-\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution.}
+\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution given in \code{family}.}
 
 \item{X}{Components/chemicals to be combined into an index; a numeric matrix or data-frame.}
 
@@ -52,7 +52,9 @@ analyze.individually(
 }
 \seealso{
 Other wqs: \code{\link{coef.wqs}},
-  \code{\link{do.many.wqs}}, \code{\link{estimate.wqs}},
+  \code{\link{do.many.wqs}},
+  \code{\link{estimate.wqs.formula}},
+  \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{plot.wqs}}, \code{\link{print.wqs}}
 }

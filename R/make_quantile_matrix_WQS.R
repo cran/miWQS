@@ -5,7 +5,7 @@
 #' @seealso \code{\link[stats]{quantile}}
 #' @keywords wqs
 
-#' @description Scores quantiles from a numeric matrix. If the matrix has values missing between zero and some threshold, say the detection limit, all these missing values  (indicated by NA) go into the first quantile.
+#' @description Scores quantiles from a numeric matrix. If the matrix has values missing between zero and some threshold, say the detection limit, all these missing values  (indicated by NA) are placed into the first quantile.
 #'
 #' @details
 #' Produces sample quantiles for a matrix \emph{X} using \code{\link[stats]{quantile}}() function. Names are kept and the 7th quantile algorithm is used. As ties between quantiles may exist, \code{\link[base]{.bincode}}() is used.
@@ -34,7 +34,7 @@
 #' q2 <- make.quantile.matrix(simdata87$X.bdl[, 1:9], 4, verbose = TRUE)
 #' summary(q2)
 #' @import stats
-#' @export make.quantile.matrix
+#' @export
 
 make.quantile.matrix <- function(
             X,

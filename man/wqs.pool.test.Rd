@@ -5,7 +5,7 @@
 \alias{wqs.pool.test}
 \title{Combining WQS Regression Estimates}
 \format{An array of 16 x 2 x 3, with \itemize{
-\item 16 parameters as the rows (The 14 weights, Intercept, and WQS estimate of a WQS model),
+\item 16 parameters as the rows (The 14 weights, intercept, and WQS estimate of a WQS model),
 \item 2 refers to the parameters of mean and standard deviation
 \item K=3 complete imputed datasets.
 }}
@@ -13,7 +13,7 @@
 data(wqs.pool.test)
 }
 \description{
-\emph{wqs.pool.test} was produced to demonstrate \code{pool.mi}(). The \code{simdata87} was first imputed multiple times to form an imputed X array. This was an example from \code{impute.univariate.bayesian.mi}. Multiple WQS regressions were run on the imputed X array to produce an array of WQS parameter estimates, \emph{wqs.pool.test}.
+\emph{wqs.pool.test} was produced to demonstrate \code{pool.mi}(). First, the univariate Bayesian imputation approach (using \code{impute.univariate.bayesian.mi}) imputed the \code{X.bdl} element of \code{simdata87} multiple times to form an imputed X array. Multiple WQS regressions were run on the imputed X array to produce an array of WQS parameter estimates, \emph{wqs.pool.test}.
 }
 \examples{
 wqs.pool.test <- data(wqs.pool.test)

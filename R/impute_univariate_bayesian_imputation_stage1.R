@@ -17,33 +17,29 @@
 #' Univariate Bayesian Imputation
 
 #' @family imputation Bayesian
-#' @keywords imputation
-
+#' @keywords imputation Bayesian
+#'
 #' @description
 #' Given interval-censored data between 0 and different detection limits (\emph{DL}), \code{impute.univariate.bayesian.mi} generates K complete datasets using Univariate Bayesian Imputation.
 #'
 #' @details
 #' This is the Univariate Bayesian Imputation approach. Only one chemical is imputed at a time. Both the observed and missing data are assumed to follow
 #'  \deqn{ log( X_{ij} )  \sim^{indep} Norm(\mu_j , \sigma^2_j) ,   i=1,...n ; j=1,...C }
-#' Subjects and chemicals are assumed to be independent. Jeffery's priors are  placed on mean and
-#' variance for each chemical. Posterior simulation uses data augmentation approach. Initial values were
-#' selected as convergence is
-#' checked using Gelman-Rubin statistics. Given sample convergence, the K sets of posterior missing
-#' values come from the burned Markov chains thinned by K. The imputed values are then substituted
-#' for the missing data, forming K complete datasets.
+#' Subjects and chemicals are assumed to be independent. Jeffery's priors are  placed on mean and variance for each chemical. Posterior simulation uses data augmentation approach. Convergence is checked using Gelman-Rubin statistics. Given sample convergence, the K sets of posterior missing values come from the burned Markov chains thinned by K. The imputed values are then substituted for the missing data, forming K complete datasets.
 #'
-#' Each of the posterior parameters from MCMC chain--mu.post, sigma.post, and log.x.miss--is saved as a list of mcmc objects (in \pkg{coda}) of length # of chemicals. (A list was chosen since the number of missing values n0 might be different from chemical to chemical).
+#' Each of the posterior parameters from MCMC chain--mu.post, sigma.post, and log.x.miss--is saved as a list of mcmc objects (in \pkg{coda}) of length # of chemicals. (A list was chosen since the number of missing values n0 might be different among chemicals).
 #'
 #' @note  No seed is set in this function. Because bootstraps and MCMC are random, a seed should be set before every use.
 #' @inheritParams impute.multivariate.bayesian
+#'
 #' @return Returns a list that contains: ** Most important. \describe{
 #'    \item{X.imputed}{** An array of n subjects x C chemicals x K imputed sets on the normal scale.}
-#'    \item{mu.post}{A list with length equal to the number of chemicals,  where each element of list (or for each chemical) is the posterior MCMC chain of the mean is saved as T x 1 \code{\link[coda]{mcmc}} object (in \pkg{coda}).}
+#'    \item{mu.post}{A list with length equal to the number of chemicals, where each element (or for each chemical) is the posterior MCMC chain of the mean, saved as T x 1 \code{\link[coda]{mcmc}} object (in \pkg{coda}).}
 #'    \item{sigma.post}{A list with length equal to the number of chemicals, where each element of list (or for each chemical) is the posterior MCMC chain of the standard deviation, sigma, saved as T x 1 \strong{coda::mcmc} object.}
-#'    \item{log.x.miss}{A list with length equal to the number of chemicals, where each element of list is a T x \eqn{n_{0j}} matrix of the log of the  imputed missing values, saved as \strong{coda::mcmc} object. \eqn{n_{0j}} is the # of missing values for the jth chemical.}
-#'    \item{convgd.table}{A data-frame summarizing convergence with C rows and columns of the Gelman-Rubin statistic and whether the point estimate is less than 1.1. Summary is also printed to the screen.}
+#'    \item{log.x.miss}{A list with length equal to the number of chemicals, where each element of list is a T x \eqn{n_{0j}} matrix of the log of the  imputed missing values, saved as \strong{coda::mcmc} object. \eqn{n_{0j}} is the total # of missing values for the jth chemical.}
+#'    \item{convgd.table}{A data-frame summarizing convergence with C rows and columns of the Gelman-Rubin statistic and whether the point estimate is less than 1.1. A summary is also printed to the screen.}
 #'    \item{number.no.converged}{A check and summary of convgd.table. Total number of parameters that fail to indicate convergence of MCMC chains using Gelman-Rubin statistic. Should be 0.}
-#'    \item{indicator.miss}{ A check; a vector of indicator variables where the number of missing values are above detection limit. Should be a vector of 0's.}
+#'  \item{indicator.miss}{A check; the sum of imputed  missing values above detection limit, which should be 0.}
 #' }
 
 #' @examples
@@ -52,8 +48,8 @@
 #' data(simdata87)
 #' set.seed(472195)
 #' result.imputed <- impute.univariate.bayesian.mi(
-#'    X = simdata87$X.bdl[, 1:6], DL = simdata87$DL[1:6],
-#'    T = 1000, n.burn = 50,  K = 2)
+#'    X = simdata87$X.bdl[, 1:2], DL = simdata87$DL[1:2],
+#'    T = 1000, n.burn = 50,  K = 2, verbose = TRUE)
 #' # Did the MCMC converge? A summary of Gelman Statistics is provided.
 #' summary(result.imputed$convg.table)
 #' # Summary of Impouted Values
@@ -61,26 +57,23 @@
  # To show examples for the accessory functions, save the dataset.
  # save( result.imputed, l.data, file = "./data/result_imputed.RData")
 
-# TEMP  #'@importFrom makeJournalTables is.integer
 #' @import coda
 #    #MCMC analysis
 ## @import lattice
 #' @importFrom utils head
 #' @importFrom truncnorm rtruncnorm
-    # Use of truncated normal in simulating posterior missing values. Used in sample.univariate.bayesian
+    # Use of truncated normal in simulating posterior missing values. Used in sample.univariate.bayesian.
 #' @importFrom invgamma rinvgamma
     # Use of inverse gamma prior in simulating posterior standard deviation values. Used in sample.univariat.bayesian.
-#' @importFrom truncnorm rtruncnorm
-   # Simulating BDLs from truncated univariate normal distribution.
 #' @export
 
 impute.univariate.bayesian.mi <- function(X, DL, T = 1000L, n.burn = 1L, K = 5L, verbose = FALSE) {
     ## Check for proper execution
-    check <- check_imputation(X, DL, Z = NULL, T, n.burn, K, verbose)
+    check <- check_imputation(X = X, DL = DL, Z = NULL, K = K, T = T, n.burn = n.burn, verbose)
     X  <- check$X
     DL <- check$DL
-    # Z  <- check$Z  #No covariates in this function.
     K  <- check$K
+    T <- check$T
 
   ## General Parameters
     # Split data into missing and observed
@@ -105,7 +98,8 @@ impute.univariate.bayesian.mi <- function(X, DL, T = 1000L, n.burn = 1L, K = 5L,
     log.uniform.initial <- generate.log.xmiss.prior (x.miss.type = "uniform", n0 = n0, DL = DL)
     initial <- list(mean.initial = as.list(log.x.mean),
                      sd.initial = as.list(log.x.sigma),
-                     log.x.miss.initial =  log.uniform.initial)
+                     log.x.miss.initial =  log.uniform.initial
+                    )
 
     # Run MCMC
     posterior.samp <- sample.univariate.bayesian.mi(X, DL, T = T,   initial)
@@ -123,34 +117,40 @@ impute.univariate.bayesian.mi <- function(X, DL, T = 1000L, n.burn = 1L, K = 5L,
       # The second chain
       chain2 <- sample.univariate.bayesian.mi(X, DL, T = T, initial2)
 
+      pgd <- purrr::possibly(coda::gelman.diag, NA, quiet = FALSE) #add Aug 13, 2019
     # message("   Calculating Gelman Statistics ..."	)
       gelman.stat <- NA
       for (k in 1:3) { # For each parameter (mean, std, missing values)
         two.chain <- mapply(coda::mcmc.list, posterior.samp[[k]], chain2[[k]], SIMPLIFY = FALSE)     # Make MCMC Lists
-        l <- lapply(two.chain, function(x) { coda::gelman.diag(x)$psrf[, 1]})    # Calculate Gelman Statistic
+        l <- lapply(two.chain, function(x) {pgd(x, autoburnin = TRUE, multivariate = FALSE)$psrf[, 1]})    # Calculate Gelman Statistic
+         #is.null(l) is not needed because unlist(l) automatically removes any NULL's.
         gelman.stat <- c(gelman.stat, unlist(l, use.names = TRUE))
       }
 
-    # A summary of gelman statistics
+    # A summary of univariate gelman statistics
       gelman.summary <- data.frame(gelman.stat = gelman.stat[-1], is.converge = gelman.stat[-1] < 1.1)
       print(summary(gelman.summary))
-
-    # Count the number of times convergence was achieved.
-      number.converged <- sum(gelman.summary$is.converge)
-      stopifnot(number.converged >= 0)  # error if total # of chains converged is negative!
+   # Count the number of times convergence was achieved.
+      number.converged <- sum(gelman.summary$is.converge, na.rm = TRUE)
 
     # Convergence occurred if number.converged = p. A nice message:
+    if(anyNA(gelman.summary$gelman.stat)){
+      warning("#> Error exits in calculating univariate Gelman statistics (see NA's in summary). \n")
+    } else {
       if (number.converged  == p) {
         cat("#> Evidence suggests that all",  number.converged, "parameters have converged. \n")
         failed <- ""
-      } else { # Implied: if( 0 < number.converged & number.converged < p){
+      } else if (0 < number.converged & number.converged < p){
         cat("#> The univariate imputation may have failed to converge;", number.converged,
             " chains of the total", p, "parameters have converged. \n"
             )
           # Print out the chains that did not converge
           failed <- gelman.summary[ !gelman.summary$is.converge, ]
           print(failed)
-     }
+      } else {
+        stop ("Error: Total # of chains converged is negative.")
+      }
+    }
 
     ## (1c) Remove burn-in using the first chain
          mu.post    <- lapply(posterior.samp$mu.post,    window, start = n.burn)
@@ -167,7 +167,7 @@ impute.univariate.bayesian.mi <- function(X, DL, T = 1000L, n.burn = 1L, K = 5L,
                                 log.x.miss,
                                 DL
                                 )
-      cat("#> Check: Indicator of # of missing values above detection limit \n");
+      cat("#> Check: Indicator of # of missing values above detection limit \n")
       print(sum(indicator.miss))
 
     return(list(
@@ -268,9 +268,9 @@ impute.univariate.bayesian.mi <- function(X, DL, T = 1000L, n.burn = 1L, K = 5L,
 # #@export
 
 sample.univariate.bayesian.mi <- function(X, DL, T = 8000, initial) {
-  # require(truncnorm);  #Use of truncated normal to sample missing values.
-  # require(invgamma);   #Use of inverse gamma prior
-  # require(coda);       #Save as coda objects.
+  # require(truncnorm)  #Use of truncated normal to sample missing values.
+  # require(invgamma)   #Use of inverse gamma prior
+  # require(coda)       #Save as coda objects.
 
   # Info
   C <- ncol(X)

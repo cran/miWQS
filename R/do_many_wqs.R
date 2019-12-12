@@ -11,7 +11,7 @@
 #'
 #'  Note #2: No seed is set in this function. Because bootstraps and splitting is random,  a seed should be set before every use.
 #'
-#'  Note #3: If there is one imputed dataset, \code{do.many.wqs} may be used, but it is overly complicated. Use the \code{\link{estimate.wqs}} function instead.
+#'  Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} was not designed in this case.
 
 ############### Arguments & Return ##########################
 # Imputation parameter
@@ -19,7 +19,8 @@
 #' @param X.imputed Array of complete components with n subjects and C components and K imputations. Must be complete.
 #' @param ... Additional arguments passed to \code{estimate.wqs}, but the arguments y, X, Z, and place.bdls.Q1 have no effect.
 # #'@param seed.boot Seed for reproducibility for WQS analysis. Default is NULL, which is a Random seed.
-#' @return Returns a list with elements that consist of matrix and list versions of estimate.wqs() output: \itemize{
+#
+#' @return Returns a list with elements that consist of matrix and list versions of \code{estimate.wqs()} output: \itemize{
 # Basic Information
 #' \item call: the function call, processed by \pkg{rlist}.
 #  \item time: Elapsed Time taken to run this analysis. Useful for simulation studies.
@@ -27,9 +28,9 @@
 #' \item n: the sample size.
 # Results
 #'    \item wqs.imputed.estimates: Array with rows = # of parameters, 2 columns = mean and standard deviation, and 3rd dimension = K.
-#'     \item AIC: The overall fit of WQS models, taken as the mean AIC and standard error across all imputation models. Saved as a character element.  Can see AICs in all models by seeing wqs.fit.
+#'     \item AIC: The overall fit of WQS models taken as the mean AIC and standard error across all imputation models. Saved as a character element.  Calling wqs.fit allows us to see all models.
 # Checking WQS
-#'     \item train.index: Numerical indices selected to form training dataset from the last WQS model.
+#'     \item train.index: Observations that are selected to train the data in the last WQS model.
 #'     \item q.train: Vector of quantiles used in training data from the last WQS model
 #'     \item train.comparison: A list of data-frames that compares the training and validation dataset for all WQS models.
 #'     \item initial: Matrix with K columns that contains the initial values used for each WQS analysis.
@@ -41,15 +42,18 @@
 #'      \item{weight estimates}{estimates of weight for each bootstrap.}
 #'      \item{imputed}{A number indicating the completed dataset used in WQS analysis.}
 #'      }
-#'      \item wqs.fit:A list (length = K) of glm2 objects of the WQS model fit to validation data. These are all the WQS estimates for all analyses. See \code{\link[glm2]{glm2}}.
+#'      \item wqs.fit: A list (length = K) of glm2 objects of the WQS model fit to validation data. These are all the WQS estimates for all analyses. See \code{\link[glm2]{glm2}}.
 #'      }
 
 ############### EXAMPLES ############################
 #' @examples
+#' #Example takes 11 seconds -- too long to run.
+#' \dontrun{
 #' data("simdata87")
 #' # Create 2 multiple imputed datasets using bootstrapping, but only use first 2 chemicals.
+#' set.seed(23234)
 #' l <- impute.boot(
-#'   X = simdata87$X.bdl[, 1:2], DL = simdata87$DL[1:2],
+#'   X = simdata87$X.bdl[ , 1:2], DL = simdata87$DL[1:2],
 #'   Z = simdata87$Z.sim[, 1], K = 2
 #' )
 #' # Perform WQS regression on each imputed dataset
@@ -57,14 +61,15 @@
 #' bayes.wqs <- do.many.wqs(
 #'   y = simdata87$y.scenario, X.imputed = l$X.imputed,
 #'   Z = simdata87$Z.sim,
-#'   B = 10, family = "binomial"
+#'   B = 2, family = "binomial"
 #' )
 #' bayes.wqs$wqs.imputed.estimates
+#' }
 #'
 #' # @importFrom scales ordinal
 #' @export
 
-do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100, ...) {
+do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
   # Check
   if (anyNA(X.imputed)) {
     stop("Some components in X.imputed are missing")
@@ -73,21 +78,15 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100, ...) {
   # Find number of parameters.
   n <- dim(X.imputed)[[1]]
   C <- dim(X.imputed)[[2]]
-  K <- if (class(X.imputed) == "array") {
-    dim(X.imputed)[[3]]
-  } else {
-    1
-  }
-  if (class(Z) == "numeric") {
-    Z <- as.matrix(Z)
-  }
+  K <- if (is(X.imputed, "array")) {  dim(X.imputed)[[3]] } else { 1 }
+  if (is(Z, "numeric"))  Z <- as.matrix(Z)
   t.p <- C + 2 + ifelse(is.null(Z), 0, ncol(Z) + 50)
   # Note: If data-frame Z is present, any categorical covariates are translated in estimate.wqs() to
   # a matrix with more columns than those in Z. These additional columns are dummy variables reflecting
   # the number of levels in each categorical covariate - 1. 50 is a high-end guess of number of
   # additional columns needed.
-  cat("#> Number of chemicals: ", ncol(X.imputed), ";  Number of completed datasets: ", K, "\n",
-    sep = ""
+  cat("#> Number of chemicals: ", ncol(X.imputed), ";",
+          "Number of completed datasets: ", K, "\n",  sep = ""
   )
   # "; Number of total parameters:", t.p , #all weights + intercept & WQS + covariates
 
@@ -109,7 +108,7 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100, ...) {
     # cat(paste0("WQS is starting using the ", scales::ordinal(k), " imputed sample."), "\n")
     wqs.imputed <- suppressMessages(estimate.wqs(
       y = y, X = X.imputed[, , k], Z = Z,
-      place.bdls.in.Q1 = FALSE, B = B, ...
+      place.bdls.in.Q1 = FALSE, ...
     ))
     # if(verbose){print(wqs.imputed)}
 

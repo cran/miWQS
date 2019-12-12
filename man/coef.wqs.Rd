@@ -32,7 +32,9 @@ coef(Wa)
 \code{\link[stats]{coef}}
 
 Other wqs: \code{\link{analyze.individually}},
-  \code{\link{do.many.wqs}}, \code{\link{estimate.wqs}},
+  \code{\link{do.many.wqs}},
+  \code{\link{estimate.wqs.formula}},
+  \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{plot.wqs}}, \code{\link{print.wqs}}
 }

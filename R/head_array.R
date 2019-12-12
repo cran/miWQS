@@ -23,9 +23,10 @@
 # #' head(result)
 # #' summary(result)
 # #'
-# #' @importFrom utils head
+# #' @import utils
+# #' #head function only
 # #' @export
-head.array <- function(x, ...) { apply(x, 2:3, head, ...) }
+head.array <- function(x, ...) { apply(x, 2:3, utils::head, ...) }
 
 # #'@rdname head.array
 # #'@export

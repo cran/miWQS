@@ -1,17 +1,19 @@
 #' @title Combining AICs
 #'
 #' @family wqs pool
+#' @keywords pool
 #' @seealso pool.mi
 #'
 #' @description
 #' Combines individual AIC estimates of separate  models to get a sense of overall model fit.
 #'
 #' @details
-#' Used in stage 3 when combining WQS model fits used on different completely observed datasets.  Similar to combining WQS parameter estimates, the mean of individual AIC estimates is taken as the central tendency estimate of WQS model fit. The standard deviation between individual AIC estimates indicates the difference in WQS model fit due to BDL values.
+#' The WQS model fits using different completely observed datasets are combined in Stage 3 of multiple imputation. Similar to combining WQS parameter estimates, the mean of individual AIC estimates is taken as the central tendency estimate of WQS model fit. The standard deviation between individual AIC estimates indicates the difference in WQS model fits due to below the detection limit values.
 #'
 #' A vector of AICs may be generated from \code{\link[miWQS]{do.many.wqs}}().
 #'
-#' @section Warning If AIC is a vector with one element, the AIC is returned as a character rounded to the nearest whole number with a warning printed that AIC cannot be combined.
+#' @section Warning:
+#' If AIC is a vector with one element, the AIC is returned as a character rounded to the nearest whole number with a warning printed that AIC cannot be combined.
 
 #' @param AIC  A vector of AICs to combine with length equal to the number of models completed (i.e. K).
 #'
@@ -37,6 +39,7 @@ combine.AIC <- function(AIC) {
     stat <- cbind(mean = mean(AIC), sd = sd(AIC))
     # Return average model fit
     AIC.pool <- suppressWarnings(as.character(formatMeanSd(stat, nsmall = 1)))
+    AIC.pool <- strsplit(AIC.pool, ",")[[1]] #Remove the comma: Add Jul 22, 2019
   }
 
   return(AIC.pool)

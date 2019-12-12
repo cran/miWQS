@@ -109,7 +109,7 @@ print.wqs <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
     ## Mean Weight Summary
       # Save Signal Function. When signal.fn is the default, it is a character vector of strings. Need to select first element.
       signal.fn <- W$call$signal.fn
-      if (class(signal.fn) == "call") { signal.fn <- "signal.none"}
+      if (is(signal.fn, "call")) {signal.fn <- "signal.none"}
 
       cat ("\n Weights Adjusted by ", signal.fn, " using N.train = ", N.train, " observations: \n", sep = "")
       mean.weights <- W$processed.weights[, 1]

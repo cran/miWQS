@@ -4,10 +4,10 @@
 \alias{do.many.wqs}
 \title{Performing Many WQS Regressions}
 \usage{
-do.many.wqs(y, X.imputed, Z = NULL, B = 100, ...)
+do.many.wqs(y, X.imputed, Z = NULL, B = 100L, ...)
 }
 \arguments{
-\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution.}
+\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution given in \code{family}.}
 
 \item{X.imputed}{Array of complete components with n subjects and C components and K imputations. Must be complete.}
 
@@ -18,13 +18,13 @@ do.many.wqs(y, X.imputed, Z = NULL, B = 100, ...)
 \item{...}{Additional arguments passed to \code{estimate.wqs}, but the arguments y, X, Z, and place.bdls.Q1 have no effect.}
 }
 \value{
-Returns a list with elements that consist of matrix and list versions of estimate.wqs() output: \itemize{
+Returns a list with elements that consist of matrix and list versions of \code{estimate.wqs()} output: \itemize{
 \item call: the function call, processed by \pkg{rlist}.
 \item C:  the number of chemicals in mixture, number of columns in X.
 \item n: the sample size.
    \item wqs.imputed.estimates: Array with rows = # of parameters, 2 columns = mean and standard deviation, and 3rd dimension = K.
-    \item AIC: The overall fit of WQS models, taken as the mean AIC and standard error across all imputation models. Saved as a character element.  Can see AICs in all models by seeing wqs.fit.
-    \item train.index: Numerical indices selected to form training dataset from the last WQS model.
+    \item AIC: The overall fit of WQS models taken as the mean AIC and standard error across all imputation models. Saved as a character element.  Calling wqs.fit allows us to see all models.
+    \item train.index: Observations that are selected to train the data in the last WQS model.
     \item q.train: Vector of quantiles used in training data from the last WQS model
     \item train.comparison: A list of data-frames that compares the training and validation dataset for all WQS models.
     \item initial: Matrix with K columns that contains the initial values used for each WQS analysis.
@@ -35,7 +35,7 @@ Returns a list with elements that consist of matrix and list versions of estimat
      \item{weight estimates}{estimates of weight for each bootstrap.}
      \item{imputed}{A number indicating the completed dataset used in WQS analysis.}
      }
-     \item wqs.fit:A list (length = K) of glm2 objects of the WQS model fit to validation data. These are all the WQS estimates for all analyses. See \code{\link[glm2]{glm2}}.
+     \item wqs.fit: A list (length = K) of glm2 objects of the WQS model fit to validation data. These are all the WQS estimates for all analyses. See \code{\link[glm2]{glm2}}.
      }
 }
 \description{
@@ -46,13 +46,16 @@ Note #1: We only impute the missing values of the components, X. Any missing dat
 
  Note #2: No seed is set in this function. Because bootstraps and splitting is random,  a seed should be set before every use.
 
- Note #3: If there is one imputed dataset, \code{do.many.wqs} may be used, but it is overly complicated. Use the \code{\link{estimate.wqs}} function instead.
+ Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} was not designed in this case.
 }
 \examples{
+#Example takes 11 seconds -- too long to run.
+\dontrun{
 data("simdata87")
 # Create 2 multiple imputed datasets using bootstrapping, but only use first 2 chemicals.
+set.seed(23234)
 l <- impute.boot(
-  X = simdata87$X.bdl[, 1:2], DL = simdata87$DL[1:2],
+  X = simdata87$X.bdl[ , 1:2], DL = simdata87$DL[1:2],
   Z = simdata87$Z.sim[, 1], K = 2
 )
 # Perform WQS regression on each imputed dataset
@@ -60,15 +63,18 @@ set.seed(50679)
 bayes.wqs <- do.many.wqs(
   y = simdata87$y.scenario, X.imputed = l$X.imputed,
   Z = simdata87$Z.sim,
-  B = 10, family = "binomial"
+  B = 2, family = "binomial"
 )
 bayes.wqs$wqs.imputed.estimates
+}
 
 # @importFrom scales ordinal
 }
 \seealso{
 Other wqs: \code{\link{analyze.individually}},
-  \code{\link{coef.wqs}}, \code{\link{estimate.wqs}},
+  \code{\link{coef.wqs}},
+  \code{\link{estimate.wqs.formula}},
+  \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{plot.wqs}}, \code{\link{print.wqs}}
 }

@@ -1,30 +1,28 @@
-#  In makeJournalTables: Don't export.
-# #'Is a vector an integer, whole, natural, even, or odd?
-# #'
+# In makeJournalTables: Don't export.
+# #'@title Is a vector an integer, whole, natural, even, or odd?
 # #'@name is.integer
+NULL
 # #'@family statistics
 # #'@keywords statistics
-# #'
 # #'@seealso {\code{\link[base]{is.numeric}}}
 # #'
-# #'@description
-# #'The following logical functions check if numeric vector x is an integer, whole number, natural number,
-# #'even or odd.
+# #'@description The following logical functions check if numeric vector x is an integer, whole number, natural number, even or odd.
 # #'
 # #'@details
-# #'The following functions expand \code{\link[base]{is.numeric}}.
-# #'\code{is.integer} determines if x contains integer numbers (..., -2, -1, 0,1,2, ...)
-# #'\code{is.wholenumber} determines if a vector x contains whole numbers (0,1,2, ...)
-# #'\code{is.natural number} determines if a vector x contains natural numbers (1,2, ...)
-# #'\code{is.even} and \code{is.odd} determines if a vector x contains even or odd numbers, respectively.
-# #'\code{fact}: My own factorial function. Returns the factorial for whole numbers only.
+# #'The following functions expand \code{\link[base]{is.numeric}}: \itemize{
+# #'\item \code{is.integer} determines if x contains integer numbers (..., -2, -1, 0,1,2, ...).
+# #'\item \code{is.wholenumber} determines if a vector x contains whole numbers (0,1,2, ...).
+# #'\item \code{is.naturalnumber} determines if a vector x contains natural numbers (1,2, ...).
+# #'\item \code{is.even} and \code{is.odd} determines if a vector x contains even or odd numbers, respectively.
+# #'\item \code{fact}: My own factorial function. Returns the factorial for whole numbers only.
+# #'}
 # #'
-# #'@note When x is not integer, the is.even and is.odd functions return an NA,  as it is neither odd or even.
+# #'@note
+# #'   When x is not integer, the is.even and is.odd functions return an NA, as it is neither odd or even.
 # #'
 # #'@param x a vector
 # #'@param t a number. Used in fact function.
 # #'@param tol tolerance detecting lower bound. Default:
-# #'
 # #'
 # #'@examples
 # #'\dontrun{
@@ -58,10 +56,7 @@
 # #' d
 # #' }
 # #'
-
-
-# save.image("is_wholenumber_fn.RData")
-
+# #'@rdname is.integer
 is.integer <- function(x, tol = .Machine$double.eps^0.5) {
    return(abs(x - round(x)) < tol)
 }
@@ -73,7 +68,6 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
 }
 
 
-
 # #'@rdname is.integer
 is.naturalnumber <- function(x, tol = .Machine$double.eps^0.5) {
   x > 0 && is.integer(x, tol)
@@ -81,8 +75,14 @@ is.naturalnumber <- function(x, tol = .Machine$double.eps^0.5) {
 
 
 # #'@rdname is.integer
-is.even <- function(x) { ifelse(is.integer(x), x %% 2 == 0,  NA) }
-is.odd <- function(x) {  ifelse(is.integer(x),  x %% 2 != 0, NA) }
+is.even <- function(x, tol = .Machine$double.eps^0.5) {
+  ifelse(is.integer(x, tol), x %% 2 == 0, NA)
+}
+
+# #'@rdname is.integer
+is.odd <- function(x, tol = .Machine$double.eps^0.5) {
+  ifelse(is.integer(x, tol), x %% 2 != 0, NA)
+}
 
 # #'@rdname is.integer
 fact <- function(t, tol = .Machine$double.eps^0.5) {
@@ -90,5 +90,7 @@ fact <- function(t, tol = .Machine$double.eps^0.5) {
       return(exp(prod(log(1:t))))
     } else {
       return(NA)  # does not exist if not a whole number
-    } # end wholenumber
-  }
+    }
+}
+
+# #'@noRd

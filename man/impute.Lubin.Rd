@@ -15,60 +15,38 @@ impute.Lubin(chemcol, dlcol, Z = NULL, K = 5L, verbose = FALSE)
 
 \item{K}{A natural number of imputed datasets to generate. Defaults: 5L.}
 
-\item{verbose}{Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.}
+\item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
 \value{
 A list of: \describe{
 \item{X.imputed}{A matrix with n subjects and K imputed datasets is returned.}
-\item{bootstrap_index}{A n x K matrix of bootstrap indices selected for the imputation.}
+\item{bootstrap_index}{A n x K matrix of bootstrap indices selected for the imputation. Each column is saved as a factor.}
 \item{indicator.miss}{A check; the sum of imputed  missing values above detection limit,
          which should be 0.}
 }
 }
 \description{
-For one chemical, this function creates an imputed dataset using a bootstrap procedure as
+Softly DEPRECATED. Use  impute.boot instead.
+
+ For one chemical, this function creates an imputed dataset using a bootstrap procedure as
 described in Lubin et al. 2004.
 }
-\details{
-Lubin et al. (2004) evaluate several imputation approaches and show that a multiple imputation procedure
-  using bootstrapping creates unbiased estimates and nominal confidence intervals unless the proportion of
-  missing data is extreme. The authors coded the multiple imputation procedure in a SAS macro that
-  is currently available. We converted the SAS macro into R code.
-
-  A single chemical with missing values is imputed. The distribution for the interval-censored data \emph{chemcol} is assumed to be   lognormal and censored between 0 and \emph{DL}. After bootstrapping, the values BDL are imputed  using the inverse transform method. In other words, generate \eqn{u_i \sim Unif( 0.0001, dlcol)} and assign value \eqn{F^{-1}(u)} to \eqn{x_{i}} for \eqn{i = 1,...n_{0}} subjects with chemical values BDL.
-
-\code{impute.Lubin} performs the following:
-\enumerate{
-  \item Input arguments
-  \item Obtain bootstrap samples.
-  \item Generate weights vector.
-  \item Use \code{\link[survival]{Surv}} function from Survival package to obtain survival object.
-  \item Use \code{\link[survival]{survreg}} function from Survival package to obtain survival model.
-  \item Sample from lognormal distribution with beta and variance from survival model as the parameters
-        to obtain upper and lower bounds.
-  \item Randomly generate value from uniform distribution between the previously obtained upper
-        and lower bounds.
-  \item Sample from the lognormal distribution to obtain the imputed data value associated with
-        the above uniform value.
-  \item Repeat for all observations. }
-}
 \examples{
-#  Using abind::abind --possibly to impute multiple chemicals
-#   ###Example 2: Simulation
   # Apply to an example simulated dataset.
   # A seed of 202 is executed before each run for reproducibility.
   data(simdata87)
-  # Impute: 1 chemical
+
   # No Covariates
   set.seed(202)
-  results_Lubin <- impute.Lubin(chemcol = simdata87$X.bdl[, 1], dlcol = simdata87$DL[1], K = 5)
+  results_Lubin <- impute.Lubin(chemcol = simdata87$X.bdl[, 1], dlcol = simdata87$DL[1],
+                                K = 5, verbose = TRUE)
   str(results_Lubin)
   summary(results_Lubin$imputed_values)
 
   # 1 Covariate
   set.seed(202)
   sim.z1 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
-                         K = 5, Z = simdata87$Z.sim[, 1])
+                         K = 5, Z = simdata87$Z.sim[, 1], verbose = TRUE)
   summary(sim.z1$imputed_values)
 
   # 2 Covariates
@@ -80,7 +58,6 @@ Lubin et al. (2004) evaluate several imputation approaches and show that a multi
 }
 \seealso{
 Other imputation: \code{\link{impute.boot}},
-  \code{\link{impute.multivariate.bayesian}},
   \code{\link{impute.sub}}
 }
 \concept{imputation}

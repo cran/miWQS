@@ -5,7 +5,7 @@
 \alias{simdata87}
 \title{Simulated Dataset 87}
 \format{A list that contains: \itemize{
-  \item y.scenario: a binary outcome (1 = case, 0 = control)
+  \item y.scenario: A binary outcome (1 = case, 0 = control)
   \item X.true: 14 chemicals; complete data.
   \item X.bdl: 14 chemicals with NA's subbed for the bottom 10th percentile of the true values.
   \item DL: The detection limit. Here, found to be the 10th percentile of X.true
@@ -17,7 +17,7 @@
          \item Female: Binary variable child's sex, simulated using the proportion of females (0.42) by binomial distribution.
          \item Hispanic, Non-Hispanic_Others: Two indicator variables of child's race/ethnicity, sampled from independent binomial distributions  (proportion of Hispanic: 0.33; proportion of Other: 0.23).
          }
-  \item time: the time it took to simulate the data.
+  \item time: The time required to simulate the data.
   }}
 \usage{
 data(simdata87)
@@ -25,7 +25,7 @@ data(simdata87)
 \description{
 The 87th dataset from the simulation study with 10 percent of observations were below the detection limit (BDL) based of a real epidemiological dataset. Out of 1000 subjects, fourteen correlated chemicals are completely observed (in X.true). In this simulation design, each chemical was simulated from independent normal distributions.
 
-BDLs were created using the bottom 10th percentile of the true data. Three covariates are considered:  the child’s age, the child’s sex (Male/Female), and the child’s ethnicity/race (White, Non-Hispanic White, and Other). After creating a model matrix, male white newborns (age = 0) serves as the  reference. The age is simulated from a normal with mean of 3.78 and standard deviation of 1.85 truncated between 0 and 8. The categorical variables are simulated from independent binomial distributions.  The outcome will be simulated using a logistic WQS model using the complete data:
+BDLs were created using the bottom 10th percentile of the true data. Three covariates are considered:  the child’s age, the child’s sex (Male/Female), and the child’s ethnicity/race (White, Non-Hispanic White, and Other). After creating a model matrix, male white newborns (age = 0) serves as the  reference. The age is simulated from a normal with mean of 3.78 and standard deviation of 1.85 truncated between 0 and 8. The categorical variables are simulated from independent binomial distributions.  The outcome will be simulated using a logistic WQS model with complete data:
 \deqn{logit(\mu_{i}) = -1.25 + log(1.75)*WQS_{i} + 0.032*z_{age}+ -0.0285*z_{sex} + 0.540*z_{His} + 0.120*z_{other} }
 where \deqn{ WQS_{i}= \Sigma_{j=1}^{c}(w_{j}*q_{ij}) }
 

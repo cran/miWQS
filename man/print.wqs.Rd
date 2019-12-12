@@ -25,6 +25,7 @@ Prints the fitted WQS model along with the mean weights. Adjusted from print.lm.
 \seealso{
 Other wqs: \code{\link{analyze.individually}},
   \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
+  \code{\link{estimate.wqs.formula}},
   \code{\link{estimate.wqs}},
   \code{\link{make.quantile.matrix}},
   \code{\link{plot.wqs}}

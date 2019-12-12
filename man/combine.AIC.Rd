@@ -16,12 +16,13 @@ The overall fit of a model across all imputation models: the mean AIC +/- the st
 Combines individual AIC estimates of separate  models to get a sense of overall model fit.
 }
 \details{
-Used in stage 3 when combining WQS model fits used on different completely observed datasets.  Similar to combining WQS parameter estimates, the mean of individual AIC estimates is taken as the central tendency estimate of WQS model fit. The standard deviation between individual AIC estimates indicates the difference in WQS model fit due to BDL values.
+The WQS model fits using different completely observed datasets are combined in Stage 3 of multiple imputation. Similar to combining WQS parameter estimates, the mean of individual AIC estimates is taken as the central tendency estimate of WQS model fit. The standard deviation between individual AIC estimates indicates the difference in WQS model fits due to below the detection limit values.
 
 A vector of AICs may be generated from \code{\link[miWQS]{do.many.wqs}}().
 }
-\section{Warning If AIC is a vector with one element, the AIC is returned as a character rounded to the nearest whole number with a warning printed that AIC cannot be combined.}{
-NA
+\section{Warning}{
+
+If AIC is a vector with one element, the AIC is returned as a character rounded to the nearest whole number with a warning printed that AIC cannot be combined.
 }
 
 \examples{
@@ -36,3 +37,4 @@ combine.AIC(1295.380)
 pool.mi
 }
 \concept{wqs pool}
+\keyword{pool}

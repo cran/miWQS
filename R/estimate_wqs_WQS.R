@@ -8,14 +8,14 @@
 #' Performs weighted quantile sum (WQS) regression model for continuous, binary, and count outcomes that was extended from \code{\link[wqs]{wqs.est}} (author: Czarnota) in the \pkg{wqs} package. By default, if there is any missing data, the missing data is assumed to be censored and placed in the first quantile.  Accessory functions (print, coefficient, plot) also accompany each WQS object.
 #'
 #' @details
-#' The \cite{\link[Rsolnp]{solnp}} algorithm, or a nonlinear optimization technique using augmented Lagrange method, is used to estimate the weights in the training set. If the log likelihood evaluated at the current parameters is too large (NaN), the log likelihood is reset to be 1e24. We have discovered no issue with this reset. A data-frame with object name \emph{train.estimates} that summarizes statistics from the nonlinear regression is returned; it consists of these columns:
+#' The \cite{\link[Rsolnp]{solnp}} algorithm, or a nonlinear optimization technique using augmented Lagrange method, is used to estimate the weights in the training set. If the log likelihood evaluated at the current parameters is too large (NaN), the log likelihood is reset to be 1e24.
+#'  A data-frame with object name \emph{train.estimates} that summarizes statistics from the nonlinear regression is returned; it consists of these columns:
 #' \describe{
 #'   \item{beta1}{estimate using solnp}
 #'   \item{beta1_glm, SE_beta1, test_stat, pvalue}{estimates of WQS parameter in model using glm2.}
 #'   \item{convergence}{logical, if TRUE the solnp solver has converged. See \cite{\link[Rsolnp]{solnp}}.}
 #'   \item{weight estimates}{estimates of weight for each bootstrap.}
 #' }
-#' This package uses the \cite{\link[glm2]{glm2}} function in the \pkg{glm2} package to fit the validation model.
 #'
 #' Signal functions allow the user to adjust what bootstraps are used in calculating the mean weight. Looking at a histogram of the overall mixture effect, which is an element after plotting a WQS object, may help you to choose a signal function. The \emph{signal.fn} argument allows the user to choose between four signal functions:
 #'  \describe{
@@ -25,13 +25,17 @@
 #'     \item{signal.test stat}{Applies more weight to the absolute value of test statistic for beta1, the overall mixture effect.}
 #'     }
 #'
+#' This package uses the \cite{\link[glm2]{glm2}} function in the \pkg{glm2} package to fit the validation model.
+#'
+#' The object is a member of the \emph{"wqs"} class; accessory functions include \code{coef}(), \code{print}(), and \code{plot}().
+#'
+#' @section Rate WQS Regression:
 #' Rates can be modelled using the offset. The \emph{offset} argument of \code{estimate.wqs()} function is on the normal scale, so please do not take a logarithm.  The objective function used to model the mean rate of the \emph{ith} individual \eqn{\lambda_i} with the offset is:
 #' \deqn{ \lambda_i = offset * exp(\eta) }
-#' , where \eqn{\eta} is the linear term of a regression.
-#'
-#' The object is a member of the" \emph{"wqs"} class; accessory functions include \code{coef}(), \code{print}(), and \code{plot}().
+#', where \eqn{\eta} is the linear term of a regression.
 
-#' @note No seed is set in this function. Because bootstraps and splitting is random,  a seed should be set  before every use.
+#' @note
+#' No seed is set in this function.  Because bootstraps and splitting is random, a seed should be set before every use.
 #'
 #' @references
 #' Carrico, C., Gennings, C., Wheeler, D. C., & Factor-Litvak, P. (2014). Characterization of Weighted Quantile Sum Regression for Highly Correlated Data in a Risk Analysis Setting. Journal of Agricultural, Biological, and Environmental Statistics, 20(1), 100–120. https://doi.org/10.1007/s13253-014-0180-3
@@ -42,12 +46,12 @@
 # APA format
 
 ########################################  Arguments and Returns  ########################################
-#' @param y  Outcome: numeric vector or factor. Assumed to follow an exponential family distribution.
+#' @param y  Outcome: numeric vector or factor. Assumed to follow an exponential family distribution given in \code{family}.
 #' @param X  Components/chemicals to be combined into an index; a numeric matrix or data-frame.
 #' @param Z  Any covariates used. Ideally, a numeric matrix, but Z can be a factor, vector or data-frame. Assumed to be complete; observations with missing covariate values are ignored with a warning printed. If none, enter NULL.
 #' @param proportion.train  The proportion of data between 0 and 1 used to train the model. If proportion.train = 1L, all the data is used to both train and validate the model. Default: 1L.
-#' @param n.quantiles An integer to specify the number of quantiles to be used categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.
-#' @param place.bdls.in.Q1  Logical; if TRUE or X has any missing values, missing values in X are placed in the first quantile of the weighted sum.  Otherwise, the data is complete (no missing data) and the data is split equally into quantiles.
+#' @param n.quantiles An integer to specify the number of quantiles in categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.
+#' @param place.bdls.in.Q1  Logical; if TRUE or X has any missing values, missing values in X are placed in the first quantile of the weighted sum.  Otherwise, the data is complete (no missing data) and the data is equally split into quantiles.
 # If place.bdls.in.Q1 is null, any missing values in X are automatically placed into the first quantile; otherwise, if complete X values are observed, it is false.  Default: NULL.
 #' @param B  Number of bootstrap samples to be used in estimating the weights in the training dataset. In order to use WQS without bootstrapping, set B = 1. However, Carrico et al 2014 suggests that bootstrap some large number (like 100 or 1000) can increase component selection. In that spirit, we set the default to 100.
 #' @param b1.pos Logical; TRUE if the mixture index is expected to be positively related to the outcome (the default). If mixture index is expected to be inversely related to the outcome, put FALSE.
@@ -58,7 +62,7 @@
 #'      if equal to "poisson", a log-link (rate or count) model is implemented.
 #'      See \code{\link[stats]{family}} in stats package. Passed to \pkg{glm2}. Default: "gaussian".
 #' @param offset The at-risk population used as a numeric vector of length equal to the number of subjects when modeling rates in Poisson regression. Passed to \pkg{glm2}.  Default: If there is no offset, enter NULL.
-#' @param verbose  Logical; if TRUE, prints more information. Useful to check for errors in the code. Default: FALSE.
+#' @param verbose  Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.
 #'
 #' @return  \code{estimate.wqs} returns an object of class "wqs". A list with the following items: (** important) \describe{
 #'   \item{call}{The function call, processed by \pkg{rlist}.}
@@ -67,13 +71,13 @@
 #'   \item{train.index}{Vector, The numerical indices selected to form the training dataset. Useful to do side-by-side comparisons.}
 #'   \item{q.train}{Matrix of quantiles used in training data. }
 #'   \item{q.valid}{Matrix of quantiles used in validation data. }
-#'   \item{train.comparison}{Data-frame that compares the training and validation datasets to validate equivalence }
-#'   \item{initial}{Vector: Initial values used in WQS }
+#'   \item{train.comparison}{Dataframe that compares the training and validation datasets to validate equivalence }
+#'   \item{initial}{Vector: Initial values used in WQS.}
 #'   \item{train.estimates}{Data-frame with rows = B. Summarizes statistics from nonlinear regression in training dataset. See details.}
-#'  \item{processed.weights}{** A C x 2 matrix, mean bootstrapped weights (and their standard errors) after filtering using signal function. Used in calculating the WQS index. }
+#'  \item{processed.weights}{** A C x 2 matrix, mean bootstrapped weights (and their standard errors) after filtering using a signal function. Used to calculate the WQS index.}
 #'  \item{WQS}{Vector of the weighted quantile sum estimate based on the processed weights. }
 #'  \item{fit}{** glm2 object of the WQS model fit to validation data. See \code{\link{glm2}{glm2}}.}
-#'  \item{boot.index}{Matrix of bootstrap indices used in training dataset to estimate weights. Its dimension is the length of training dataset with number of columns = B.}
+#'  \item{boot.index}{Matrix of bootstrap indices used in training dataset to estimate the weights. Its dimension is the length of training dataset with number of columns = B.}
 #' }
 
 ########################################  Examples  ########################################
@@ -82,40 +86,40 @@
 #'  data(simdata87)
 #'  set.seed(23456)
 #'  W.bin4  <- estimate.wqs(
-#'                   y = simdata87$y.scenario, X = simdata87$X.true[, 1:9],
-#'                   B = 10, family = "binomial"
+#'                   y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
+#'                   B = 10, family = "binomial",
+#'                   verbose = TRUE
 #'                   )
 #'  W.bin4
 #'
 #' # Example 2: Continuous outcome. Use WQSdata example from wqs package.
+#' \dontrun{
 #'  if (requireNamespace("wqs", quietly = TRUE)) {
 #'   library(wqs)
 #'   data(WQSdata)
 #'   set.seed(23456)
-#' #    W <- wqs::wqs.est(y = WQSdata$y, X = WQSdata[,1:9], B = 10)
-#'   Wa <- estimate.wqs (y = WQSdata$y, X = WQSdata[, 1:9], B = 10)
+#'   W <- wqs::wqs.est(WQSdata$y, WQSdata[,1:4], B = 10)
+#'   Wa <- estimate.wqs (y = WQSdata$y, X = WQSdata[, 1:4], B = 10)
 #'   Wa
 #'  } else {
-#'   message("you need to install the package wqs for this example")
+#'   message("You need to install the package wqs for this example.")
 #'  }
-#' ## More examples are found 02_WQS_Examples.
-#' ## Also checked vs. Jenna's code, as well as thesis data, to verify results.
-#'
+#'  }
+
+## More examples are found 02_WQS_Examples.
+## Also checked vs. Czarnota code, as well as thesis data, to verify results.
+
 ########################################   Importing  & Export  ########################################
-#' # TEMP #' @importFrom makeJournalTables  make.descriptive.table  my.summary
-   # functions used in print commands.
+#TEMP # @importFrom makeJournalTables  make.descriptive.table  my.summary
+
 #' @importFrom utils head
 #' @importFrom Hmisc format.pval
 #' @import Rsolnp
      # estimate the training set parameters (nonlinear regression) using solnp.
-#' @importFrom glm2 glm2
+#' @import glm2
       # estimate the validation set parameters
-#' @importFrom MASS glm.nb
-     # Negative Binomial Regression is in this package, but currently not used.
 #' @importFrom rlist list.merge
      # update call with defaults.
-
-
 #' @export estimate.wqs
 
 # There may be a warning from solnp: "NaN detected in function call...check your function". This means that "the log likelihood evaluated at the current parameters is too large (NaN); value is reset to be 1e24." Currently, we have discovered no issue with this reset.
@@ -140,7 +144,7 @@ estimate.wqs <- function(
     family <- match.arg(family)
     signal.fn <- tolower(signal.fn)
     signal.fn <- match.arg(signal.fn)
-    l <- check_function(X, y, Z, proportion.train, n.quantiles, place.bdls.in.Q1,
+    l <- check_wqs_function(X, y, Z, proportion.train, n.quantiles, place.bdls.in.Q1,
                         B, b1.pos, signal.fn, family, offset, verbose)
     X <- l$X
     y <- l$y
@@ -189,32 +193,35 @@ estimate.wqs <- function(
 
     # Save WQS and weights from bootstrap
     result <- l$out
-   # print( summary(result[ ,1:6]) ) #should show 2 weights
     wts.matrix <- result[, -(1:6)]
-    # print(head(wts.matrix))
     boot.index <- l$boot.index
-   # print( head(wts.matrix) )
+    # print( summary(result[ ,1:6]) ) #should show 2 weights
+    # print(head(wts.matrix))
+    # print( head(wts.matrix) )
 
     # Edited: Add warning to user if the algorithm did not converge
     if (sum(result$convergence) < B & signal.fn != "signal.converge.only") {
-      warning(paste(B - sum(result$convergence), "bootstrap regression estimates in the training sets have not converged. Proceed results with caution. \n"))
+      warning(paste(B - sum(result$convergence), "bootstrap regression estimates in the training sets have not converged. Proceed results with caution. \n"), call. = FALSE)
     }
 
     # Check Constraints
-    if (b1.pos & min(result$beta_1) < -1e-8 | !b1.pos & max(result$beta_1) > 1e-8) { stop("Error in solnp. beta1 constaint is violated.")  }
+    if (b1.pos & min(result$beta_1) < -1e-8 | !b1.pos & max(result$beta_1) > 1e-8) {
+      stop("Error in solnp. beta1 constaint is violated.")
+      }
     w.sum = apply(wts.matrix, 1, sum)
-    d <- data.frame (w.min = min(wts.matrix),
-                      w.max =  max(wts.matrix),
-                      min(w.sum), max(w.sum)
+    d <- data.frame(w.min = min(wts.matrix),
+                    w.max = max(wts.matrix),
+                    min(w.sum), max(w.sum)
     )
-    if (verbose) {   cat("## Chk: Weight Constraints \n");  print(d) }
+    if (verbose) {cat("## Chk: Weight Constraints \n");  print(d) }
 
     #### ----- The weights are processed by signal functions.
     # cat("## Forming weighted average ... \n")
-    # Define standard error function used.
-    se <- function(X) { sqrt(var(X))}
-    # which is equivalent to the following formula
-    #  se.weight  <-  sqrt(       1/(B-1) * sum( ( A[ ,j] - w[j]/B ) ^ 2 ) )
+    # Define the standard error function
+    se <- function(X) {
+      sqrt(var(X))
+      #Or,  se.weight  <-  sqrt(       1/(B-1) * sum( ( A[ ,j] - w[j]/B ) ^ 2 ) )
+      }
 
     # No signal: uses all bootstrap-estimated weights in calculating WQS
     if (signal.fn == "signal.none") {
@@ -223,14 +230,14 @@ estimate.wqs <- function(
     }
 
     # converged only: Only converged bootstraps are kept.
-    if (signal.fn == "signal.converge.only") {
+    else if (signal.fn == "signal.converge.only") {
       A <- wts.matrix[result$convergence, ]
       w <- apply(A, 2, mean)
       se.w <- apply(A, 2, se)
     }
 
     # test statistic weight or signal.abs weighs the bootstraps by significance,   abs(test_stat_b) / sum(test_stat_b) .
-    if (signal.fn == "signal.abs" | signal.fn == "signal.test.stat") {
+    else if (signal.fn == "signal.abs" | signal.fn == "signal.test.stat") {
       # if(anyNA(d$ts_weight)) { perform simple average}
       ts_weight <- abs(result$test_stat) / sum(abs(result$test_stat))
       A <- ts_weight * wts.matrix
@@ -240,7 +247,7 @@ estimate.wqs <- function(
 
     # significant test stat: Only includes bootstrap samples where beta1 was significant from glm2.
     # Added Oct 19, 2018. Done in Jenna 2015 Enviornmental Chemical paper. Still need to be tested though.
-    if (signal.fn == "signal.signifiance") {
+    if (signal.fn == "signal.significance") {
       result$nb <- ifelse(result$pvalue_beta1 < 0.05, TRUE, FALSE)
       S <- wts.matrix[result$nb, ]
       w <- apply(S, 2, mean)
@@ -252,43 +259,33 @@ estimate.wqs <- function(
      fit.val <- wqs.fit(q.valid, Z.valid, y.valid,  w, family, offset.valid)
      WQS <- fit.val$WQS
      fit <- fit.val$fit
-    # WQS <- as.vector(q.valid %*% w)
-    # if( is.null(Z.valid)){
-    #   temp <- data.frame(y = y.valid, WQS)
-    #   } else {
-    #   temp <- data.frame(y = y.valid, Z.valid, WQS)
-    # }
-    # fit <- glm2::glm2(y ~ ., data = temp, family = family, offset = log(offset.valid))
-
 
     ### --------- Output to Return
-    D <- formals(estimate.wqs)   # Make defaults of function as a list.
+    # U gives a list of defaults, but the names are overriden by the actual functional call.  # If the default for the character list is chosen, all will come up. By the match.args() function, the first one is used.
+    D <- formals(estimate.wqs)     # Make defaults of function as a list.
     A <- as.list(match.call())     # Make the call saved as a list.
-    # I want a list of defaults, but the names are overriden by the actual functional call.
     U <- rlist::list.merge(D, A)
-    # If the default for the character list is chosen, all will come up. By the match.args() function, the first one is used.
-     # a <- as.list(U$signal.fn)
-     # if( length(a) > 1) { U$signal.fn <- a[[2]] }
+    # a <- as.list(U$signal.fn)
+    # if( length(a) > 1) { U$signal.fn <- a[[2]] }
 
-    # EDITED. Switched WQS and weights, added train
     out <- list(call = U, C = C, n = n,
                 train.index = train.index,  q.train = q.train, q.valid = q.valid,
                 train.comparison = train.comparison,
                 initial = init,
                 train.estimates = result,
                 processed.weights = cbind(mean.weights = w, se.weights = se.w),
-                #    convergence = result$convergence, #which bootstraps converged.
                 WQS = WQS,
                 fit = fit,
                 boot.index = boot.index
-                # beta1.glm = result$beta1.glm
-                #    solnp.result = result
     )
     class(out) <- "wqs"
     return(out)
 }
 
-
+#No longer outputed:
+# convergence = result$convergence, #which bootstraps converged.
+# beta1.glm = result$beta1.glm
+# solnp.result = result
 
 # \============================================================================================================================
 ### (III) Accessory Functions for WQS ====
@@ -296,110 +293,6 @@ estimate.wqs <- function(
 
 # #' Below you would find all the helper functions that is used in @title wqs_est.
 # #' ```{r WQS.accessors}
-# #' Makes sure data is in right format. (Is matrix or data frame )
-check_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdls.in.Q1, B,
-                          b1.pos, signal.fn, family, offset, verbose) {
-  ## Data
-  # Remove all missing values from outcome and covariates.
-  # Then, reassign Z. Desired class is NULL or a numeric matrix (with columns being continuous or 0/1 for dummies.)
-  if (is.null(Z)) {
-    df <- data.frame(y = y, X)
-    if (verbose) {
-      cat("## Outcome Summary \n");  print(summary(df$y));
-    }
-    if (anyNA(df$y)) {
-      warning("All missing outcomes are ignored.")
-      df <- df[complete.cases(df$y),   ]
-    }
-  } else {         # Z is not null.
-    df <- data.frame(y = y, X, z2 = Z)
-    cov_index <-  grep("z2", colnames(df))
-    # if(verbose){
-    #  cat("## Outcome & Covariate Summary \n")
-    #  print( summary(df[ , c(1, cov_index)  ] ) )
-    # }
-    if (anyNA(df[, c(1, cov_index)  ])) {
-      warning("All missing outcomes and/or covariates are ignored.")
-      index <- complete.cases(df[, c(1, cov_index)  ])
-      df <- df[ index,   ]
-    }
-    # Reassign Z.
-    if (is.factor(Z) | is.data.frame(Z)) {
-      Z <- model.matrix(y ~ ., data = df[, c(1, cov_index) ]) [, -1]
-    } else {
-      Z <- df[, cov_index, drop = FALSE]
-      if (ncol(Z) == 0) {
-          print(utils::head(df))
-          print(cov_index)
-          stop("No covariates found. Something wrong with cov_index")
-      } # End possible error.
-    } # End reassignment
-    colnames(Z) <- gsub("z2.", "", colnames(Z)) # Revert to orginal name.
-  } # End null if.
-
-  # Replace X, y, and Z with data.frame. (Z is replaced above.)
-  index <- 1 + 1:ncol(X)
-  X <- df[, index]
-  y <- df$y
-
-  # Desired format of y is a numeric vector. For anything else:
-  if (!is.numeric(y)) {
-    if (is.null(y)) { stop("y is NULL. y must have some data") }
-    if (is.factor(y)) {   warning("Converting y into a number"); y <- as.numeric(y) - 1 }
-    else { stop("y must be numeric or a factor.") }
-  }
-
-  # Desired class for X is a numeric matrix. For anything else:
-  {
-    if (is.null(X)) { stop("X is null. X must have some data.") }
-    if (is.character(X)) {  stop("X must be a numeric vector or matrix.") }
-    if (class(X) == "numeric") {
-      warning("There is only one chemical. No need to run WQS.")
-      X  <- as.matrix(X)
-    }
-    if (is.data.frame(X) & sum(apply(X, 2, class) == "numeric")  == ncol(X)) {
-      X  <- as.matrix(X)
-    } # else { stop("X must be a numeric vector or matrix.")  }
-  }
-
-  if (verbose) {
-  cat("## Classes: \n")
-  classes <- c(class(y), class(X), class(Z)) ; names(classes) <-  c("y", "X", "Z")
-  print(classes)
-  }
-
-  if (length(y)  != nrow(X)) { stop("check dimensions of data", call. = FALSE) }
-  #    if(!is.null(Z) & nrow(X) != nrow(Z) ) { stop("check dimensions of data", call. = FALSE) }
-  #   n0 <- apply(X, 2, function(X) { sum(is.na(X)) })
-
-  # proportion.train
-  val = ifelse(is.numeric(proportion.train) & 0 < proportion.train & proportion.train <= 1, TRUE, FALSE)
-  if (!val) { stop("Proportion of values to the training set must be numeric and between 0 and 1 (0<prop <=1).") }
-
-  # n.quantiles
-  quant = ifelse(!is.null(n.quantiles),
-                  ifelse(is.numeric (n.quantiles)  & length(n.quantiles) == 1 & n.quantiles > 1, TRUE, FALSE),
-                  FALSE)
-  if (!quant) {  stop("q must be numeric of length 1 and at least 1")}
-  if (class(place.bdls.in.Q1) != "logical")
-    stop("place bdls in Q1 must be logical value of TRUE or FALSE")
-  if (!is.numeric(B) | length(B) != 1) # B < 2 ???
-    stop("B must be numeric of length 1")
-  if (class(b1.pos) != "logical")
-    stop("b1.pos must be logical value of TRUE or FALSE")
-
-  if (class(family) != "character") { stop("family must be a character vector")   }
-  if (family == "poisson") {
-    a <- ifelse(is.null(offset),
-            warning("There is no offset specified. A count Poisson regression is performed"),
-            "")
-  }
-
-  if (class(verbose) != "logical")
-    stop("verbose must be logical value of TRUE or FALSE")
-
-  return(list(X = X, y = y, Z = Z))
-}
 
 ### randomize.train: NEW FUNCTION I ADDED from estimate.wqs.
 # #'@description: This function randomly split and create training and validation sets. Note: This function should always set the seed before use.
@@ -451,7 +344,7 @@ randomize.train <- function(y, X, Z, offset, proportion.train) {
 }
 
 
-### Comparsion of Test and Validation Datasets
+### Comparison of Test and Validation Datasets
 # Helper function that compares test and validation datasets that I get from WQS. Executed in main function but printed in summary.wqs
 # #'@param train.index the training index output from a wqs.est object
 # #'@param y,X,Z:   the X,y, and Z used as arguments for wqs.est.
@@ -459,11 +352,11 @@ randomize.train <- function(y, X, Z, offset, proportion.train) {
 
 summarize.compare <- function(train.index, y,  Z, verbose = TRUE) {
   # combine all into one dataset
-  data.tmp <- if (is.null(Z)) {  data.frame(y)   } else {    data.frame(y, Z) }
+  data.tmp <- if (is.null(Z)) {data.frame(y)} else {data.frame(y, Z)}
 
   # Determine which column of data.tmp is numeric or categorical.If there are no numeric covariates,
   # set covariate.num to be NULL. If there are no categorical covariates, set to NULL.
-  classes <- sapply(data.tmp,  class)
+  classes <- sapply(data.tmp, class)
   covariate.num <- data.tmp[, classes == "numeric", drop = FALSE]
   covariate.fac <- data.tmp[, classes != "numeric", drop = FALSE]
 
@@ -501,7 +394,7 @@ objfn <- function(param, q, Z, y, family, offset) {
   if (is.null(Z)) {
     eta <- b0 + b1 * q %*% w
   } else {
-    p <- if (class(Z) == "numeric") { 1 } else { dim(Z)[2]  }  # Edited.
+    p <- if (is(Z, "numeric")) { 1 } else { dim(Z)[2]  }  # Edited.
     theta <- param[(3 + C):(2 + C + p)]
     eta <- b0 + b1 * q %*% w + Z %*% theta
   }
@@ -692,6 +585,7 @@ wqs.fit <- function(q, Z, y, w, family, offset) {
   else {
     temp <- data.frame(y, WQS)
   }
+
   fit <- glm2::glm2(y ~ ., data = temp, family = family, offset = log(offset))
   # print(fit$family)
   if (!fit$converged) {

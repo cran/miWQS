@@ -47,7 +47,6 @@
 #'              b1.pos = TRUE, c = 4, family = "negbin")
 #'
 #' # No need to be exported.
-#'
 #' @noRd
 
 specify.init <- function(Z, y, b1.pos, c, family, offset = NULL, verbose = FALSE) {
@@ -78,7 +77,7 @@ specify.init <- function(Z, y, b1.pos, c, family, offset = NULL, verbose = FALSE
       alpha.init <- 0
     }
     init.Z <- coef(fit.init)[-1]  # or, if didn't work    #summary(fit.init)$coefficients[-1,1]
-    p <- if (class(Z) == "numeric") { 1 } else { dim(Z)[2]  }  # Edited.
+    p <- if (is(Z, "numeric")) { 1 } else { dim(Z)[2]  }  # Edited.
     names(init.Z) <- paste0("z", 1:p)
     # Intercept estimate comes from glm.
     b0.0 <- coef(fit.init)[1] ; names(b0.0) <- NULL

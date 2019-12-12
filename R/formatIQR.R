@@ -44,7 +44,7 @@ formatIQR <- function(x, format.type = c("2", "1"), digits = 2, ...) {
   v <- if (is.character(v) | is.numeric(v)) {  as.matrix(v) }  # makes a 3 x 1 matrix
   stopifnot(nrow(v) == 3)
   # if(is.null( rownames(v) ) ) {
-  warning("Assuming v is a matrix with 1st, 2nd, 3rd quantiles in order.");
+  warning("Assuming v is a matrix with 1st, 2nd, 3rd quantiles in order.")
   rownames(v) <- c("25%", "50%", "75%")
   # }
 

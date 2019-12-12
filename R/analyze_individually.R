@@ -41,11 +41,9 @@ analyze.individually <- function(y, X, Z = NULL,
   # Checks
   family <- tolower(family)
   family <- match.arg(family)
-  if (class(family) != "character") {
-    stop("family must be a character vector")
-  }
+  if (!is(family, "character")) stop("family must be a character name of family")
   if (family == "poisson" & is.null(offset)) {
-    warning("There is no offset specified. A count Poisson regression is performed")
+    warning("There is no offset specified. A count Poisson regression is performed.")
   }
 
   # Save Number of Chemicals and Loop for all chemicals.

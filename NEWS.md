@@ -1,4 +1,54 @@
 
+# miWQS\_v-0.2.0
+
+## New Features
+
+  - New `estimate.wqs.formula()` now has a formula capability. Can type
+    in a full formula and specify column names instead of dividing up
+    the data into three columns.
+  - `impute.Lubin()`:
+      - Softly deprecated. Use `impute.boot` instead.
+      - If chemcol is complete, the function NOW returns complete data
+        with warning
+      - The `bootstrap_index` element is now factors instead of numbers.
+        Easier to see what subjects were selected.
+  - `pool.mi()`:
+      - Added argument `prt` to print to standard output so that the
+        `pool.mi` object can be read in an understandable fashion.
+      - Argument `methods` is NOW more robust by adding `tolower()`.
+        Now, if someone writes in all caps, the function still works.
+      - Accessory `mice.df()` is now clearer – only accepts either
+        method to avoid mistake.
+
+## Minor Improvements and Changes
+
+  - Documentation & example clarity.
+  - Moved the base **R** packages from `IMPORTS` to `DEPENDS` for
+    clarity. As the base R packages are already attached, this should
+    have no impact on package performance.
+  - Replace all checks using `class(.)==matrix` with `is()`, [as
+    directed from
+    CRAN](https://developer.r-project.org/Blog/public/2019/11/09/when-you-think-class.-think-again/index.html).
+  - Clarified internal performance
+      - accessory `check_constants()`: Used `sprintf()` for more generic
+        error returns.
+      - accessory `check_imputation`: Removed checking Z here. Now Z is
+        checked in each `impute.`.. function.
+      - accessory `head.array()`: made package for `head()` clear by
+        using `utils::head()`.
+      - accessory `is.even()`, `is.odd()` – now accepts tolerance
+        argument for consistency with other `is.`.. functions.
+  - `combine.AIC()`: removed comma from output that was generated from
+    format.mean.sd() (Added July 22, 2019)
+  - `estimate.wqs()`:
+      - Syntax clarification,
+      - Added `if/else` on signal function options for speed.
+      - Now uses `check_wqs_function()`; deleted duplicate
+        check\_function() from before.
+  - `impute.boot()`:
+      - Added note to contact Jay Lubin for SAS macro
+      - Cleaned up code/spaces. Didn’t change functionality.
+
 # miWQS 0.1.0
 
 ## Breaking changes
@@ -74,7 +124,7 @@
       - Fixes bug so that the imputed values now draw from the last
         state, instead of the second-to-last state.
       - Inner Mechanics
-      - Reduced \# of objects to be used in finding `initial2`.
+          - Reduced \# of objects to be used in finding `initial2`.
           - Changed object name `x.miss.initial` to
             `log.x.miss.initial`.
           - Examples still remain the same.
