@@ -1,20 +1,22 @@
+# #' @noRd
 # #' @title Checking miWQS functions
 # #' @name check_miWQS
 # #' @description Functions used to check if arguments of miWQS functions are in the right form. Modifies and returns arguments that are in right form.
 # #' @inheritParams impute.multivariate.bayesian
-# #' @import methods
-# #' @noRd
+#' @import methods
+
+
 ####################################################################################################
 # #' @details
 # #' check_imputation(): Check for proper execution of Bayesian imputation functions and bootstrap imputation function (impute.boot).
 # #' @note Currently no check for verbose is included.
-# # #' @importFrom makeJournalTables is.naturalnumber
+# #' @importFrom makeJournalTables is.naturalnumber
 # #' @rdname check_miWQS
 
 check_imputation <- function(X, DL, Z, K, T, n.burn, verbose = NULL) {
   ## Check X.  Desired class is a numeric matrix. X can also be a vector or data-frame. Errors if X is null or character.
   if (is.vector(X)) {
-  #  warning("Only one chemical is imputed.", call. = FALSE)
+    #  warning("Only one chemical is imputed.", call. = FALSE)
     X  <- as.matrix(X)
   }
   X <- check_X(X)
@@ -37,7 +39,7 @@ check_imputation <- function(X, DL, Z, K, T, n.burn, verbose = NULL) {
     no.DL <- which(is.na(DL))
     warning("The detection limit for ", names(no.DL), " is missing.
               Both the chemical and detection limit is removed in imputation.", call. = FALSE)
-    DL <- DL [ -no.DL ]
+    DL <- DL [-no.DL]
     if (!(names(no.DL) %in% colnames(X))) {
       cat("  ##Missing DL does not match colnames(X) \n")
     }
@@ -103,11 +105,11 @@ check_imputation <- function(X, DL, Z, K, T, n.burn, verbose = NULL) {
 # #' @inheritParams impute.Lubin
 
 check_function.Lub <- function(chemcol, dlcol, Z,  K, verbose) {
-   ## chemcol check: Should be a numeric vector.
-   ## Note: check_X() checks if chemical X = chemcol has the proper form, but requires matrix or data-frame argument. However, chemcol is a vector so it is switch back. check_X() also used in Bayesian imputation & WQS models.
+  ## chemcol check: Should be a numeric vector.
+  ## Note: check_X() checks if chemical X = chemcol has the proper form, but requires matrix or data-frame argument. However, chemcol is a vector so it is switch back. check_X() also used in Bayesian imputation & WQS models.
 
   X <- check_X(as.matrix(chemcol))
-  if (ncol(X) > 1){
+  if (ncol(X) > 1) {
     warning("This approach cannot impute more than one chemical at time. Imputing first element...")
     chemcol <- chemcol[1]
   } else {
@@ -115,62 +117,62 @@ check_function.Lub <- function(chemcol, dlcol, Z,  K, verbose) {
   }
 
   ## dlcol check
-    if(is.null(dlcol))
-      stop("dlcol is NULL. A detection limit is needed", call. = FALSE)
-    if (is.na(dlcol))
-      stop("The detection limit has missing values so chemical is not imputed.",
-         immediate. = FALSE, call. = FALSE)
-    if(!is.numeric(dlcol))
-      stop("The detection limit is non-numeric. Detection limit must be numeric.", call. = FALSE)
-    if(!is.vector(dlcol))
-      stop("The detection limit must be a vector.", call. = FALSE)
+  if (is.null(dlcol))
+    stop("dlcol is NULL. A detection limit is needed", call. = FALSE)
+  if (is.na(dlcol))
+    stop("The detection limit has missing values so chemical is not imputed.",
+      immediate. = FALSE, call. = FALSE)
+  if (!is.numeric(dlcol))
+    stop("The detection limit is non-numeric. Detection limit must be numeric.", call. = FALSE)
+  if (!is.vector(dlcol))
+    stop("The detection limit must be a vector.", call. = FALSE)
 
-    # If dlcol is a numeric vector, the dlcol is the smallest one. If the values are different, a warning is printed.
-    if (length(dlcol) > 1) {
-      # All values of dlcol are the same so just pick 1.
-      if (min(dlcol, na.rm = TRUE) == max(dlcol, na.rm = TRUE)) {
-        dlcol <- unique(dlcol)
-      } else {
-        # Values are different, so pick the smallest as detection limit.
-        warning(" The detection limit is not unique, ranging from ",
-                min(dlcol, na.rm = TRUE), " to ", max(dlcol, na.rm = TRUE),
-                "; The smallest value is assumed to be detection limit",
-                call. = FALSE, immediate. = FALSE)
-        detcol <- !is.na(chemcol)
+  # If dlcol is a numeric vector, the dlcol is the smallest one. If the values are different, a warning is printed.
+  if (length(dlcol) > 1) {
+    # All values of dlcol are the same so just pick 1.
+    if (min(dlcol, na.rm = TRUE) == max(dlcol, na.rm = TRUE)) {
+      dlcol <- unique(dlcol)
+    } else {
+      # Values are different, so pick the smallest as detection limit.
+      warning(" The detection limit is not unique, ranging from ",
+        min(dlcol, na.rm = TRUE), " to ", max(dlcol, na.rm = TRUE),
+        "; The smallest value is assumed to be detection limit",
+        call. = FALSE, immediate. = FALSE)
+      detcol <- !is.na(chemcol)
 
-        #A Summary is printed
-        cat("\n Summary when chemical is missing (BDL) \n")
-        print(summary(dlcol[ detcol == 0]))
-        cat("## when chemical is observed \n ")
-        print(summary(dlcol[ detcol == 1]))
+      # A Summary is printed
+      cat("\n Summary when chemical is missing (BDL) \n")
+      print(summary(dlcol[detcol == 0]))
+      cat("## when chemical is observed \n ")
+      print(summary(dlcol[detcol == 1]))
 
-        # Assign Detection Limit:
-        dlcol <- min(dlcol, na.rm = TRUE)           # if not, it is just the minimum of dlcol.
-      }
+      # Assign Detection Limit:
+      dlcol <- min(dlcol, na.rm = TRUE)           # if not, it is just the minimum of dlcol.
     }
+  }
 
-    ## Z checks
-    if (is.null(Z)) {     # if Z is null, make it an intercept-term.
-      Z <- matrix(rep(1, length(chemcol)), ncol = 1)
-    }
-    if (anyNA(Z)) {
-      warning ("Missing covariates are ignored.")
-    }
+  ## Z checks
+  if (is.null(Z)) {     # if Z is null, make it an intercept-term.
+    Z <- matrix(rep(1, length(chemcol)), ncol = 1)
+  }
+  if (anyNA(Z)) {
+    warning ("Missing covariates are ignored.")
+  }
 
-    # if Z is a vector or dataframe, redefine Z as numeric matrix.
-    # Note: model.matrix() expects Z to be complete and contain no missing data.
-    if (!is.matrix(Z)) {
-      if (is.vector(Z) | is.factor(Z)) {
-        Z <- model.matrix(~., model.frame(~ Z))[, -1, drop = FALSE]
-      } else if (is.data.frame(Z)) {
-        Z <- model.matrix(~., model.frame(~., data = Z))[, -1, drop = FALSE]
-      } else { # if ( is.array(Z) | is.list(Z) ){
-        stop ("Please save Z as a vector, dataframe, or numeric matrix.")
-      }
+  # if Z is a vector or dataframe, redefine Z as numeric matrix.
+  # Note: model.matrix() expects Z to be complete and contain no missing data.
+  if (!is.matrix(Z)) {
+    if (is.vector(Z) | is.factor(Z)) {
+      Z <- model.matrix(~., model.frame(~Z))[, -1, drop = FALSE]
+    } else if (is.data.frame(Z)) {
+      Z <- model.matrix(~., model.frame(~., data = Z))[, -1, drop = FALSE]
+    } else { # if ( is.array(Z) | is.list(Z) ){
+      stop ("Please save Z as a vector, dataframe, or numeric matrix.")
     }
+  }
 
   ## K check
-    K <- check_constants(K)
+  K <- check_constants(K)
 
   ## return any modifications of any parameters
   return(list(chemcol = chemcol, dlcol = dlcol, Z = Z, K = K))
@@ -182,7 +184,7 @@ check_function.Lub <- function(chemcol, dlcol, Z,  K, verbose) {
 # #' @inheritParams estimate.wqs
 # #' @rdname check_miWQS
 check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdls.in.Q1, B,
-                              b1.pos, signal.fn, family, offset, verbose) {
+                               b1.pos, signal.fn, family, offset, verbose) {
   ## Check Verbose
   if (!is(verbose, "logical"))
     stop("verbose must be logical value of TRUE or FALSE", call. = FALSE)
@@ -191,7 +193,7 @@ check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdl
   ## Check X: Desired class is a numeric matrix. For anything else:
   if (is.vector(X)) {
     stop("Only one chemical is to be placed with an index. Don't run WQS, but a regular glm2.",
-         call. = FALSE
+      call. = FALSE
     )
   }
   X <- check_X(X)
@@ -209,61 +211,61 @@ check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdl
   }
   if (length(y)  != nrow(X))
     stop("Can't Run: y and X have different lengths. The total number of individuals in outcome is ",
-                                   length(y),
-                                   ", but the number of individuals in X is ",
-                                   nrow(X),
-                                   ".",
-                                   call. = FALSE)
+      length(y),
+      ", but the number of individuals in X is ",
+      nrow(X),
+      ".",
+      call. = FALSE)
 
   ## Check Z: Create a model matrix.
   ## Desired class is NULL or COMPLETE numeric matrix (with columns being continuous or 0/1 dummy variables for categorical).
 
   # Remove all missing values from outcome and covariates with warning.
   if (is.null(Z)) {
-      df <- data.frame(y = y, X)
-      if (verbose) cat("## Outcome Summary \n");  print(summary(df$y));
-      if (anyNA(df$y)) {
-        warning("All missing outcomes are ignored.")
-        df <- df[complete.cases(df$y),   ]
-      }
-    } else {         # Z is not null.
+    df <- data.frame(y = y, X)
+    if (verbose) cat("## Outcome Summary \n");  print(summary(df$y))
+    if (anyNA(df$y)) {
+      warning("All missing outcomes are ignored.")
+      df <- df[complete.cases(df$y), ]
+    }
+  } else {         # Z is not null.
 
-      ## Check: X and Z should have same number of rows
-      nZ <- if (is.vector(Z) | is.factor(Z)) { length(Z) } else { nrow(Z) }       # save columns of Z
-      if (nrow(X) != nZ) {
-        cat("> X has", nrow(X), "individuals, but Z has", nZ, "individuals")
-        stop("Can't Run. The total number of individuals with components X is different than total number of individuals with covariates Z.", call. = FALSE)
-      }
+    ## Check: X and Z should have same number of rows
+    nZ <- if (is.vector(Z) | is.factor(Z)) { length(Z) } else { nrow(Z) }       # save columns of Z
+    if (nrow(X) != nZ) {
+      cat("> X has", nrow(X), "individuals, but Z has", nZ, "individuals")
+      stop("Can't Run. The total number of individuals with components X is different than total number of individuals with covariates Z.", call. = FALSE)
+    }
 
-      if(is.vector(Z))  Z <- as.matrix(Z)
-      df <- data.frame(y = y, X, z2 = Z[ , , drop = FALSE])
-      cov_index <-  grep("z2", colnames(df))
-        # if(verbose){
-        #  cat("## Outcome & Covariate Summary \n")
-        #  print( summary(df[ , c(1, cov_index)  ] ) )
-        # }
-      if (anyNA(df[, c(1, cov_index)  ])) {
-        warning("All missing outcomes and/or covariates are ignored.")
-        index <- complete.cases(df[, c(1, cov_index)  ])
-        df <- df[ index,   ]
-      }
+    if (is.vector(Z)) Z <- as.matrix(Z)
+    df <- data.frame(y = y, X, z2 = Z[, , drop = FALSE])
+    cov_index <-  grep("z2", colnames(df))
+    # if(verbose){
+    #  cat("## Outcome & Covariate Summary \n")
+    #  print( summary(df[ , c(1, cov_index)  ] ) )
+    # }
+    if (anyNA(df[, c(1, cov_index)])) {
+      warning("All missing outcomes and/or covariates are ignored.")
+      index <- complete.cases(df[, c(1, cov_index)])
+      df <- df[index, ]
+    }
 
-      ## Format Z as a matrix.
-      if (is.factor(Z) | is.data.frame(Z)) {
-        Z <- model.matrix(y ~ ., data = df[, c(1, cov_index) ]) [, -1]
-      } else {
-        Z <- df[, cov_index, drop = FALSE]
-        if (ncol(Z) == 0)
-          stop(sprintf("No covariates are found.",
-                       utils::head(df),
-                       "Something wrong with cov_index.",
-                       cov_index
-          ))
+    ## Format Z as a matrix.
+    if (is.factor(Z) | is.data.frame(Z)) {
+      Z <- model.matrix(y ~ ., data = df[, c(1, cov_index)]) [, -1]
+    } else {
+      Z <- df[, cov_index, drop = FALSE]
+      if (ncol(Z) == 0)
+        stop(sprintf("No covariates are found.",
+          utils::head(df),
+          "Something wrong with cov_index.",
+          cov_index
+        ))
 
 
 
-      } #end reassignment if.
-      colnames(Z) <- gsub("z2.", "", colnames(Z)) # Revert to orginal name.
+    } # end reassignment if.
+    colnames(Z) <- gsub("z2.", "", colnames(Z)) # Revert to orginal name.
   } # End null if.
 
   # Save new X and new y after removing missing covariates and outcomes.
@@ -271,7 +273,7 @@ check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdl
   X <- df[, index]
   y <- df$y
 
-  #Check Data
+  # Check Data
   if (verbose) {
     cat("## Classes: \n")
     classes <- c(class(y), class(X), class(Z)) ; names(classes) <-  c("y", "X", "Z")
@@ -283,16 +285,21 @@ check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdl
 
 
   ## Check proportion.train
-  val = ifelse(is.numeric(proportion.train) & 0 < proportion.train & proportion.train <= 1, TRUE, FALSE)
+  val <- ifelse(
+    is.numeric(proportion.train) &
+      0 < proportion.train & proportion.train <= 1,
+    TRUE,
+    FALSE
+    )
   if (!val)
-    stop("Proportion of values to the training set must be numeric and between 0 and 1 (0<prop <=1).",
-         call. = FALSE
-         )
+    stop("Proportion of values to the training set must be numeric, be greater than 0 and less than 1 (0< prop <=1).",
+      call. = FALSE
+    )
 
   ## Check n.quantiles
-  quant = ifelse(!is.null(n.quantiles),
-                  ifelse(is.numeric (n.quantiles)  & length(n.quantiles) == 1 & n.quantiles > 1, TRUE, FALSE),
-                  FALSE)
+  quant <- ifelse(!is.null(n.quantiles),
+    ifelse(is.numeric (n.quantiles)  & length(n.quantiles) == 1 & n.quantiles > 1, TRUE, FALSE),
+    FALSE)
   if (!quant) stop("q must be numeric of length 1 and at least 1.", call. = FALSE)
 
   ## Check place.bdls.in.Q1
@@ -324,7 +331,7 @@ check_wqs_function <- function(X, y, Z, proportion.train, n.quantiles, place.bdl
 ####################################################################################################
 ####################################################################################################
 # #' @details
-# #' check_X(): Desired class is a numeric matrix. X can also be dataframe. Errors if X is null or character.
+# #' check_X(): Desired class is a numeric matrix. X can also be data-frame. Errors if X is null or character.
 # #' Called in Bayesian imputation, bootstrap imputation, and WQS
 # #' @rdname check_miWQS
 
@@ -355,7 +362,7 @@ check_constants <- function(K) {
     stop(sprintf(" must be non-null."), call. = TRUE)
   if (!is.numeric(K) | length(K) != 1)
     stop(sprintf(" must be numeric of length 1"), call. = TRUE)
-  if (K < 0)
+  if (K <= 0)
     stop(sprintf(" must be a positive integer"), call. = TRUE)
   if (!is.wholenumber(K)) {
     warning(sprintf(" is not a whole number. The next largest is taken."), call. = TRUE)
@@ -368,23 +375,22 @@ check_constants <- function(K) {
 # #' @details
 # #' check_covariates(): \itemize{
 # #' \item ** IDEALLY, The covariates, Z, is a completely observed numeric matrix.
-# \item ** Checks if covariates Z have the right structure (i.e. a complete numeric matrix).  Z may be an incomplete numeric matrix, factor or vector or dataframe. Z is converted to a complete numeric matrix.
-# }
-# This function is called upon Bayesian imputation functions.
-# impute.Lubin() has different requirement for Z, so not called.
-# Assumes that Z is on-NULL here. If Z is null, adjust in other check_functions.
-# In the imputation functions,  X and y are passing arguments.
-# Description of Z in impute.boot(): Any covariates used in imputing the chemical concentrations. If none, enter NULL. Ideally, a numeric matrix; but Z can be a vector or data frame. Assumed to be complete; observations with missing covariate variables are ignored in the imputation, with a warning printed.
+# #' \item ** Checks if covariates Z have the right structure (i.e. a complete numeric matrix).  Z may be an incomplete numeric matrix, factor or vector or data-frame. Z is converted to a complete numeric matrix.
+# #' }
+# #' This function is called upon Bayesian imputation functions.
+# #' * impute.Lubin() has different requirement for Z, so not called.
+# #' * Assumes that Z is on-NULL here. If Z is null, adjust in other check_functions.
+# #' * In the imputation functions,  X and y are passing arguments.
+# #' * Description of Z in impute.boot(): Any covariates used in imputing the chemical concentrations. If none, enter NULL. Ideally, a numeric matrix; but Z can be a vector or data-frame. Assumed to be complete; observations with missing covariate variables are ignored in the imputation, with a warning printed.
 
 # #' @inheritParams impute.boot
-# DEFUNCT #'@param imputation.model Logical. If TRUE, covariates are checked for imputation model. There is no y in imputation model, so the y argument is ignored. If FALSE, covariates are checked for WQS model
+# # DEFUNCT #'@param imputation.model Logical. If TRUE, covariates are checked for imputation model. There is no y in imputation model, so the y argument is ignored. If FALSE, covariates are checked for WQS model
 # #' @param y  The outcome, y, passed from WQS model.
 # #' @rdname check_miWQS
 
 check_covariates <- function(Z, X) {
   ## Z should be non-NULL when passed to check_covariates() because model.frame() doesn't accept NULL values. Adjust in other check_functions, as WQS and imputation models handle it differently.
-
-  # Z can be a vector, factor, data.frame, or numeric matrix.
+  # Z can be a vector, factor, data-frame, or numeric matrix.
 
   ## Check: X and Z should have same number of rows
   nZ <- if (is.vector(Z) | is.factor(Z)) { length(Z) } else { nrow(Z) }       # save columns of Z
@@ -399,27 +405,22 @@ check_covariates <- function(Z, X) {
     index <- complete.cases(Z)  # save vector of where Z is complete
     Z  <- Z[index, , drop = FALSE]  # save complete Z
     X  <- X[index, , drop = FALSE]   # save X, excluding missing data from Z
-    dimnames(X)[[1]] <- 1:nrow(X)  #Renumber rows of X so that missing data can be excluded properly.
-    warning ("Covariates are missing for individuals ", which(!index), " and are ignored. Subjects renumbered in complete data.",  call. = FALSE, immediate. = TRUE)
+    dimnames(X)[[1]] <- 1:nrow(X)  # Renumber rows of X so that missing data can be excluded properly.
+    warning ("Covariates are missing for individuals ", paste(which(!index), collapse = ", "), " and are ignored. Subjects renumbered in complete data.",  call. = FALSE, immediate. = TRUE)
     # Else if covarite matrix Z is used with an outcome (like WQS model), y needs to be included.
   }
 
   # Note: model.matrix() expects Z to be complete and contain no missing data.
-  if(!is.null(Z) & !is.matrix(Z)) {
-      if (is.vector(Z) | is.factor(Z)) {
-        Z <- model.matrix(~., model.frame(~ Z))[, -1, drop = FALSE]
-      } else if (is.data.frame(Z)) {
-        Z <- model.matrix(~., model.frame(~., data = Z))[, -1, drop = FALSE]
-     } else if (is.array(Z)){
-       stop ("Please save Z as a vector, dataframe, or numeric matrix.")
+  if (!is.null(Z) & !is.matrix(Z)) {
+    if (is.vector(Z) | is.factor(Z)) {
+      Z <- model.matrix(~., model.frame(~Z))[, -1, drop = FALSE]
+    } else if (is.data.frame(Z)) {
+      Z <- model.matrix(~., model.frame(~., data = Z))[, -1, drop = FALSE]
+    } else if (is.array(Z)) {
+      stop ("Please save Z as a vector, dataframe, or numeric matrix.")
     }
   }
 
   # Return data
   return(list(Z = Z, X = X))
 }
-
-
-
-
-

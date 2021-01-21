@@ -17,11 +17,10 @@
 #'
 #' @examples
 #' wqs.pool.test <- data(wqs.pool.test)
-#'
 #' # stage_3_pool_mi_example
 NULL
 
-# Code to generate wqs.pool.test --------------------------------------------------------------
+# Code to generate wqs.pool.test -----------------------------------------------
 # #data(simdata87)
 # #data(result.imputed.UBMI)
 #  y <- simdata87$y.scenario
@@ -29,7 +28,9 @@ NULL
 #  K <- dim(X.imputed)[[3]] wqs.pool.test <- array(NA, dim = c(16, 2, K),
 #                                 dimnames = list(NULL, c("Estimate",  "Std.Error"),  paste0("Imputed.",  1:K) ))   #same as X.imputed
 #  for (k in 1:K) {
-#     wqs.imputed <- estimate.wqs(y = y, X.imputed[, , k], Z = NULL,  proportion.train = 0.5,  n.quantiles = 4,
+#     wqs.imputed <- estimate.wqs(
+#     y = y, X.imputed[, , k], Z = NULL,
+#     proportion.train = 0.5,  n.quantiles = 4,
 #                                place.bdls.in.Q1 = FALSE, B = 30,
 #                                b1.pos = TRUE,
 #                                family = "binomial", debug = FALSE)
@@ -44,4 +45,3 @@ NULL
 #    dimnames(wqs.pool.test)[[1]] <- dimnames(a)[[1]]
 #  }  #end K draw loop
 #
-

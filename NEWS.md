@@ -1,5 +1,78 @@
 
-# miWQS\_v-0.2.0
+# miWQS 0.4.2
+
+  - Fixed discrepnacy in accordance with CRAN standards: Removed global
+    variables `estimate` and `chemical` from enviornment in
+    `plot.wqs()`.
+
+# miWQS 0.4.1
+
+  - Fixed discrepancies with CRAN standards:
+  - DESCRIPTION FILE: Rewrote dois to match CRAN standards (\<doi:…\>,
+    not \<:…\>)
+  - `impute.multivariate.bayesian()`: Removed empty details section
+
+# miWQS 0.4.0 – TO CRAN
+
+## Breaking Changes
+
+  - Additional Resource: A methods paper (Hargarten & Wheeler (2020)
+    \<:10.1016/j.envres.2020.109466\>) is cited in the README,
+    DESCRIPTION, and some function files. This paper provides
+    theoretical details in using the package.
+  - `estimate.wqs()`: Can now compare training and validation datasets,
+    which is commonly done in WQS analysis.
+  - `plot.wqs()`: Removed defunct `filename` argument. Plots are no
+    longer saved automatically; please save manually using ().
+
+## New Functions
+
+  - New `impute.multivariate.regress()`: imputes all chemicals jointly
+    using a multivariate Bayesian regression.
+
+## Minor Updates
+
+  - Documentation clarity and edits
+  - `do.many.wqs()`:
+      - Fixed error in collecting WQS results. When training proportion
+        not 1, WQS is smaller than matrix to hold values.
+      - Added a message that included the sample size, number of
+        chemicals, datasets to impute, and number of covariates
+        modelled.
+      - Passed the explicit `B` argument to the `...` argument. Should
+        not impact any code, as it is called within `estimate.wqs()`.
+  - `estimate.wqs()`:
+      - Cleaned up code
+      - Updated accessories `summarize.compare()` and
+        `make.descriptive.tables()`.
+  - `impute.sub()`: replaced for-loop with much faster
+    `tidyr::replace_na()`.
+  - `impute.boot()` and `impute.Lubin()`: Now uses the survival routines
+    that have been updated in version 3.
+  - `plot.wqs()`:
+      - Now uses `tidyr::pivot_longer()` instead of `tidyr::gather()` in
+        response to update in **tidyr** package from v. 0.8 to v. 1.0.0.
+        See `vignette("pivot")` and `vignette("in-packages")`in tidyr
+        documentation for more information.
+      - Updated documentation to require tidyr to be v. 1.0.0.  
+      - Added a `ggplot2` layer to make x-axis smaller so you can read
+        labels on weights histogram
+  - Internal Improvements
+      - accessory `check_constants()`: Fixed bug that returns error if
+        the number of bootstraps (B), imputed datasets (K), or length of
+        chain (T) is 0 <thanks R Journal reviewer>
+      - new accessory `imp_cond_MVN`: An accessory function used to
+        impute conditional truncated multivariate normal used in
+        `impute.multivariate.regress()`. Added **condMVNorm** &
+        **tmvtnorm** packages to DESCRIPTION.
+      - accessory `formatMedianIQR`: Changed format of median and IQR to
+        “median\[Q1, Q3\]”.
+      - accessory `is.even()`, `is.odd()` – now accepts tolerance
+        argument for consistency with other `is...` functions.
+      - accessory `specify.init()`: change argument to C.
+      - accessory `replace_na()`: Changes made in `impute.sub()`
+
+# miWQS 0.2.0
 
 ## New Features
 

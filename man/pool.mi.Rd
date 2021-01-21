@@ -4,8 +4,14 @@
 \alias{pool.mi}
 \title{Pooling Multiple Imputation Results}
 \usage{
-pool.mi(to.pool, n = 999999, method = c("smallsample", "rubin"),
-  alpha = 0.05, prt = TRUE, verbose = FALSE)
+pool.mi(
+  to.pool,
+  n = 999999,
+  method = c("smallsample", "rubin"),
+  alpha = 0.05,
+  prt = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{to.pool}{An array of p x 2 x K, where p is the number of parameters to be pooled,
@@ -20,7 +26,7 @@ degrees of freedom is used. Otherwise, the method from Rubin (1987) is used.}
 
 \item{alpha}{Type I error used to form the confidence interval. Default: 0.05.}
 
-\item{prt}{Boolean variable for printing out the standard output. If TRUE, selective parts of a pool.mi object are printed in an understandable fashion.}
+\item{prt}{Boolean variable for printing out the standard output. If TRUE, selective parts of a pool.mi object are printed to the screen in an understandable fashion.}
 
 \item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
@@ -34,18 +40,20 @@ A data-frame is returned with the following columns: \describe{
 \item{relative.inc.var(r)}{The relative increase in variance due to nonresponse, formula (3.1.7) Rubin (1987).}
 \item{proportion.var.missing(lambda)}{The proportion of variation due to nonresponse, formula (2.24) Van Buuren (2012).}
 \item{frac.miss.info}{The fraction missing information due to nonresponse, formula (3.1.10) Rubin (1987).}
-\item{df.t}{The degrees of freedom for t reference distribution, formula (3.1.6) Rubin (1987) or method of Barnard-Rubin (1999) (if method = "smallsample" (default)).}
+\item{df.t}{The degrees of freedom for the reference t-distribution, formula (3.1.6) Rubin (1987) or method of Barnard-Rubin (1999) (if method = "smallsample" (default)).}
 \item{CI}{The (1-alpha)\% confidence interval (CI) for each pooled estimate.}
 \item{p.value}{The p-value used to test significance.}
 }
 }
 \description{
-Combine multiple parameter estimates (as used in MI) across the K imputed datasets using Rubin 1996 / 1987 formulas, including: calculating a pooled mean, standard error, missing data statistics, confidence intervals, and p-values.
+Combines multiple parameter estimates (as used in MI) across the K imputed datasets using Rubin 1996 / 1987 formulas, including: calculating a pooled mean, standard error, missing data statistics, confidence intervals, and p-values.
 }
 \details{
-Stage 3 of Multiple Imputation. Assumes that each complete-data estimate is normally distributed. The input is an array with p rows referring to the number of parameters to be combined. An estimate and within standard error forms the two columns of the array, which can be easily be taken as the first two columns of the coefficients element of the summary of a glm/lm object. The last dimension is the number of imputations, K. See dataset \code{wqs.pool.test} as an example.
+Stage 3 of Multiple Imputation: We assume that each complete-data estimate is normally distributed. But, given incomplete data, we assume a t-distribution, which forms the basis for confidence intervals and hypothesis tests.
 
-Uses Rubin's rules to calculate the statistics of an imputed dataset including: the pooled mean, total standard error,  a relative increase in variance, fraction of missing information, and 95\% confidence interval and p-value based on the t-distribution approximation.
+The input is an array with p rows referring to the number of parameters to be combined. An estimate and within standard error forms the two columns of the array, which can be easily be taken as the first two columns of the coefficients element of the summary of a glm/lm object. The last dimension is the number of imputations, K. See dataset \code{wqs.pool.test} as an example.
+
+Uses Rubin's rules to calculate the statistics of an imputed dataset including: the pooled mean, total standard error, a relative increase in variance, the fraction of missing information, a (1-alpha)% confidence interval, and a p-value.
 }
 \note{
 Modified the \code{\link[mice]{pool.scalar}} (version R 3.4) in the \pkg{mice} package to handle multiple parameters at once in an array and combine them. Similar to \code{\link[norm]{mi.inference}} in the \pkg{norm} package, but the small-sample adjustment is missing.
@@ -74,13 +82,16 @@ b
 
 # Odds ratio and 95\% CI using the CLT.
 odds.ratio <- exp(wqs.results.pooled[15:16, c("pooled.mean", "CI.1", "CI.2")])
+## makeJournalTables :: format.CI(odds.ratio, trim = TRUE, digits = 2, nsmall = 2)
 odds.ratio
 
 #  The mice package is suggested for the examples, but not needed for the function.
 }
 \references{
 Rubin, D. B. (1987). Multiple Imputation for nonresponse in surveys. New York: Wiley.
+
 Rubin, D. B. (1996). Multiple Imputation After 18+ Years. Journal of the American Statistical Association, 91(434), 473–489. https://doi.org/10.2307/2291635.
+
 Barnard, J., & Rubin, D. B. (1999). Small-Sample Degrees of Freedom with Multiple Imputation. Biometrika, 86(4), 948–955.
 }
 \keyword{pool}

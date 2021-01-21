@@ -22,8 +22,7 @@
 #'   \item n0: A vector of length 14 indicating the number of non-detects.
 #'   \item delta: A vector of length 14 indicating whether the chemical is observed (1) or not (0)
 #'   \item Z.sim: A data-frame of covariates consisting of: \itemize{
-#'          \item Age: A continuous covariate of child's age , simulated using normal with
-#'           mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of leukemia.
+#'          \item Age: A continuous covariate of child's age , simulated using normal with mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of the case.
 #'          \item Female: Binary variable child's sex, simulated using the proportion of females (0.42) by binomial distribution.
 #'          \item Hispanic, Non-Hispanic_Others: Two indicator variables of child's race/ethnicity, sampled from independent binomial distributions  (proportion of Hispanic: 0.33; proportion of Other: 0.23).
 #'          }
@@ -45,21 +44,21 @@ NULL
 # l.data previously
 
 
-   # Params_Scenario is a list that consists of scenario parameters used to generate simdata87: \itemize{
-   # \item Simulation Settings \itemize{
-   # \item Scenario W10
-   # \item Proportion of BDL: 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1
-   # \item Strength of WQS Association (beta1):  0.5596158
-   # \item Odds Ratio Simulated: 0.2865048 1.7500000
-   # }
-   # \item
-   # \item Parameters for all Scenarios \itemize{
-   # \item Sample Size (n): 1000
-   # \item Number of chemicals (c):  14
-   # \item Realizations of each scenario (M):  100
-   # \item Number of imputations in MI (K): 0 1 5
-   # \item Data Generation Seed: 47336
-   # \item More Information printed to screen? FALSE
-   # \item Chemical Weights (w)
-   #       x1 x2 x3 x4 x5   x6    x7    x8  x9   x10  x11   x12    x13  x14
-   #       0  0  0  0  0    0.25  0.25  0   0    0    0.25  0.25   0    0
+# Params_Scenario is a list that consists of scenario parameters used to generate simdata87: \itemize{
+# \item Simulation Settings \itemize{
+# \item Scenario W10
+# \item Proportion of BDL: 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1
+# \item Strength of WQS Association (beta1):  0.5596158
+# \item Odds Ratio Simulated: 0.2865048 1.7500000
+# }
+# \item
+# \item Parameters for all Scenarios \itemize{
+# \item Sample Size (n): 1000
+# \item Number of chemicals (c):  14
+# \item Realizations of each scenario (M):  100
+# \item Number of imputations in MI (K): 0 1 5
+# \item Data Generation Seed: 47336
+# \item More Information printed to screen? FALSE
+# \item Chemical Weights (w)
+#       x1 x2 x3 x4 x5   x6    x7    x8  x9   x10  x11   x12    x13  x14
+#       0  0  0  0  0    0.25  0.25  0   0    0    0.25  0.25   0    0

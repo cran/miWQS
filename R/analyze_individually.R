@@ -15,11 +15,11 @@
 #'
 #' @inheritParams estimate.wqs
 #'
-#' @return  A data-frame of statistics of individual chemical analysis is returned: \describe{
+#' @return  A data-frame from statistics of individual chemical analyses is returned: \describe{
 #'  \item{chemical.name}{name of the component}
 #'  \item{estimate}{the estimate of log chemical effect}
 #'  \item{Std.Error}{the standard error of log chemical effect}
-#'  \item{AIC}{Model Fit. See \code{\link[stats]{AIC}}.}
+#'  \item{AIC}{Model Fit. See \code{stats::\link[stats]{AIC}}.}
 #'  }
 #'
 #' @examples
@@ -29,9 +29,9 @@
 #'   y = simdata87$y.scenario, X = simdata87$X.true, Z = simdata87$Z.sim,
 #'   family = "binomial"
 #' )
-#' # Here, most of the "Estimate", which is the log_odds of each log of the
-#' # chemical has on the outcome, are positive, possibly indicating a positive
-#' # relationship between mixture of chemicals and the outcome.
+#' # The "Estimate" column contains the log_odds of each log of the
+#' # chemical on the outcome. Most are positive, which indicates a possible
+#' # positive relationship between mixture of chemicals and the outcome.
 #' @import stats
 #' @importFrom glm2 glm2
 #' @export analyze.individually

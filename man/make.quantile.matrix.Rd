@@ -4,17 +4,22 @@
 \alias{make.quantile.matrix}
 \title{Making Quantiles of Correlated Index}
 \usage{
-make.quantile.matrix(X, n.quantiles, place.bdls.in.Q1 = if (anyNA(X))
-  TRUE else FALSE, ..., verbose = FALSE)
+make.quantile.matrix(
+  X,
+  n.quantiles,
+  place.bdls.in.Q1 = if (anyNA(X)) TRUE else FALSE,
+  ...,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{X}{A numeric matrix. Any missing values are indicated by NA's.}
 
-\item{n.quantiles}{An integer to specify the number of quantiles in categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.}
+\item{n.quantiles}{An integer specifying the number of quantiles in categorizing the columns of X, e.g. in quartiles (q = 4), deciles (q = 10), or percentiles (q = 100). Default: 4L.}
 
 \item{place.bdls.in.Q1}{Logical; if TRUE or X has any missing values, missing values in X are placed in the first quantile of the weighted sum.  Otherwise, the data is complete (no missing data) and the data is equally split into quantiles.}
 
-\item{...}{Further arguments passed to or from other methods. Currently has no effect.}
+\item{...}{further arguments passed to or from other methods.}
 
 \item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
@@ -46,11 +51,14 @@ summary(q2)
 \seealso{
 \code{\link[stats]{quantile}}
 
-Other wqs: \code{\link{analyze.individually}},
-  \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
-  \code{\link{estimate.wqs.formula}},
-  \code{\link{estimate.wqs}}, \code{\link{plot.wqs}},
-  \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{analyze.individually}()},
+\code{\link{coef.wqs}()},
+\code{\link{do.many.wqs}()},
+\code{\link{estimate.wqs.formula}()},
+\code{\link{estimate.wqs}()},
+\code{\link{plot.wqs}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{wqs}

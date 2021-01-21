@@ -31,7 +31,7 @@
 #'
 #' Note #2: No seed is set. Please set seed so the same bootstraps are selected.
 #'
-#' Note #3: If the length of the DL parameter is greater than the number of components, the smallest value is assumed to be a detection limit. A warning is printed to screen.
+#' Note #3: If the length of the DL parameter is greater than the number of components, the smallest value is assumed to be a detection limit. A warning is printed to the screen.
 #'
 #  Note #4: For debugging, see impute.Lubin() and turn verbose = TRUE.
 #'
@@ -53,78 +53,78 @@
 #' data("simdata87")
 #' # Impute using one covariate.
 #' l <- impute.boot(X = simdata87$X.bdl, DL = simdata87$DL, Z = simdata87$Z.sim[, 1],
-#'                  K = 2, verbose = TRUE
-#'                  )
+#'   K = 2, verbose = TRUE
+#' )
 #' apply(l$X.imputed, 2:3, summary)
 #' @export impute.boot
 
 impute.boot <- function(X, DL, Z = NULL, K = 5L, verbose = FALSE) {
-    # ptm <- proc.time()    # Start the clock!(data)
+  # ptm <- proc.time()    # Start the clock!(data)
 
-    ### Check for proper execution: T & n.burn are not needed so it could be anything.
-    check <- check_imputation(X = X, DL = DL, Z = Z, K = K, T = 5, n.burn = 4, verbose)
-    X  <- check$X
-    DL <- check$DL
+  ### Check for proper execution: T & n.burn are not needed so it could be anything.
+  check <- check_imputation(X = X, DL = DL, Z = Z, K = K, T = 5, n.burn = 4, verbose)
+  X  <- check$X
+  DL <- check$DL
 
-    ## Check Z: Create a model matrix.  Desired class is COMPLETE numeric matrix (with columns being continuous or 0/1 dummy variables for categorical)
-    if (is.null(Z)) {
-      # Make a matrix of 1's if no covariates.
-      Z <- matrix(1, nrow = nrow(X), ncol = 1, dimnames = list(NULL, "Intercept"))
-    } else {
-      # Remove any Missing Covariates with warning. Uses helper check_covariates().
-      l <- check_covariates(Z, X)
-      X <- l$X   # X matrix without
-      Z <- l$Z
-    }
-    K  <- check$K
-    if(verbose){
-      cat("X \n"); print(summary(X))
-      cat("DL \n"); print(DL)
-      cat("Z \n"); print(summary(Z))
-      cat("K =", K, "\n")
-    }
+  ## Check Z: Create a model matrix.  Desired class is COMPLETE numeric matrix (with columns being continuous or 0/1 dummy variables for categorical)
+  if (is.null(Z)) {
+    # Make a matrix of 1's if no covariates.
+    Z <- matrix(1, nrow = nrow(X), ncol = 1, dimnames = list(NULL, "Intercept"))
+  } else {
+    # Remove any Missing Covariates with warning. Uses helper check_covariates().
+    l <- check_covariates(Z, X)
+    X <- l$X   # X matrix without
+    Z <- l$Z
+  }
+  K  <- check$K
+  if (verbose) {
+    cat("X \n"); print(summary(X))
+    cat("DL \n"); print(DL)
+    cat("Z \n"); print(summary(Z))
+    cat("K =", K, "\n")
+  }
 
-    # Extract parameters
-    n <- nrow(X)
-    c <- ncol(X)
-    chemical.name <- colnames(X)
+  # Extract parameters
+  n <- nrow(X)
+  c <- ncol(X)
+  chemical.name <- colnames(X)
 
-    # Run loop for each component in X
-    results_Lubin <- array(dim = c(n, c, K),
-                           dimnames = list(NULL, chemical.name, paste0("Imp.", 1:K))
-                           )
-    bootstrap_index <- array(dim = c(n, c, K),
-                             dimnames = list(NULL, chemical.name, paste0("Imp.", 1:K))
-                             )
-    indicator.miss <- rep(NA, c)
-    for (j in 1:c) {
-      # cat("Imputing chemical", j, "\n")
-      answer <-  impute.Lubin(chemcol = X[, j],  dlcol = DL[j], Z = Z, K = K)
-      results_Lubin[, j, ] <- as.array(answer$imputed_values, dim = c(n, j, K))
-      bootstrap_index[ ,j, ] <- array(answer$bootstrap_index, dim = c(n, 1, K) )
-      indicator.miss[j] <- answer$indicator.miss
-    }
+  ## Run loop for each component in X
+  results_Lubin <- array(dim = c(n, c, K),
+    dimnames = list(NULL, chemical.name, paste0("Imp.", 1:K))
+  )
+  bootstrap_index <- array(dim = c(n, c, K),
+    dimnames = list(NULL, chemical.name, paste0("Imp.", 1:K))
+  )
+  indicator.miss <- rep(NA, c)
+  for (j in 1:c) {
+    # cat("Imputing chemical", j, "\n")
+    answer <-  impute.Lubin(chemcol = X[, j],  dlcol = DL[j], Z = Z, K = K)
+    results_Lubin[, j, ] <- as.array(answer$imputed_values, dim = c(n, j, K))
+    bootstrap_index[, j, ] <- array(answer$bootstrap_index, dim = c(n, 1, K))
+    indicator.miss[j] <- answer$indicator.miss
+  }
 
-    #Check if imputation is done correctly.
-    total.miss <- sum(indicator.miss)
-    if (total.miss == 0) {
-      message(
-        "#> Check: The total number of imputed values that are above the detection limit is ",
-        sum(indicator.miss), "."
-      )
-    } else {
-      print(indicator.miss)
-      stop("#> Error: Incorrect imputation is performed; some imputed values are above the detection limit. Could some of `X` have complete data under a lower bound (`DL`)?",
-           call. = FALSE)
-    }
-
-    # Time in seconds.
-    # time.impute <- (proc.time() - ptm)[3]
-
-    return(list(
-        X.imputed = results_Lubin,
-        bootstrap_index = answer$bootstrap_index,
-        indicator.miss = total.miss
-      )
+  ## Check if imputation is done correctly.
+  total.miss <- sum(indicator.miss)
+  if (total.miss == 0) {
+    message(
+      "#> Check: The total number of imputed values that are above the detection limit is ",
+      sum(indicator.miss), "."
     )
+  } else {
+    print(indicator.miss)
+    stop("#> Error: Incorrect imputation is performed; some imputed values are above the detection limit. Could some of `X` have complete data under a lower bound (`DL`)?",
+      call. = FALSE)
+  }
+
+  ## Time in seconds.
+  # time.impute <- (proc.time() - ptm)[3]
+
+  return(list(
+    X.imputed = results_Lubin,
+    bootstrap_index = answer$bootstrap_index,
+    indicator.miss = total.miss
+  )
+  )
 }

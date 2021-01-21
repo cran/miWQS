@@ -1,5 +1,6 @@
 library(testthat)
-# context("Defining wts.matrix from wqs.est() output in estimate.wqs and wqs helper functions.")
+# context("Defining wts.matrix from wqs.est() output in estimate.wqs and
+#   wqs helper functions.")
 #
 # library(wqs)
 # data(WQSdata)

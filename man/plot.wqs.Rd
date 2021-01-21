@@ -2,21 +2,19 @@
 % Please edit documentation in R/plot_wqs_ggplot2_helper.R
 \name{plot.wqs}
 \alias{plot.wqs}
-\title{Histograms of the Weights, Beta1, and WQS using \code{\link[ggplot2]{ggplot2}}}
+\title{Histograms of the Weights, Beta1, and WQS using \code{\link[ggplot2]{ggplot}}}
 \usage{
-\method{plot}{wqs}(x, filename = "myfile", ...)
+\method{plot}{wqs}(x, ...)
 }
 \arguments{
 \item{x}{An object of class "wqs", usually as a result of \code{\link{estimate.wqs}}.}
 
-\item{filename}{DEFUNCT; argument not used; files are no longer saved. Suggested Name is WQS_Plot.}
-
-\item{...}{DEFUNCT. Arguments no longer passed to ggsave(). This argument currently has no effect.}
+\item{...}{Further arguments passed from other methods. Currently has no effect.}
 }
 \value{
 A list of histograms \describe{
  \item{hist.weights}{A list of \pkg{ggplot2} histogram of weights across the bootstrap. Each component consists of a histogram with a weight estimate.}
- \item{hist.beta1}{A histogram of the overall chemical mixture effect. This parameter is constrained to be all positive if the b1.pos argument in estimate.wqs() is TRUE.; otherwise, it is FALSE.}
+ \item{hist.beta1}{A histogram of the overall chemical mixture effect. This parameter is constrained to be positive if the b1.pos argument in estimate.wqs() is TRUE.; otherwise, it is FALSE.}
  \item{hist.WQS}{A histogram of the overall chemical sum, WQS. Due to constraints, it is always between 0 and \emph{n.quantiles-1}.}
  }
 }
@@ -30,27 +28,27 @@ Three histograms are produced using \code{\link[ggplot2]{geom_histogram}} with t
 Once a Weighted Quantile Sum (WQS) regression is run, the \strong{hist.weights} is a panel of histograms. These are distributions of the weight estimates to determine which chemicals are important in the mixture. Each weight is between 0 and 1 and sum to 1. The individual bootstrapped weight estimates were used to construct the overall chemical index, WQS.
 
 The \strong{hist.beta1} is the distribution of the overall effect of the mixture on the outcome across bootstraps in the training dataset. Due to the constraint in WQS regression, these estimates are either all positive or all negative as dictated by \emph{b1.pos()} argument in \code{estimate.wqs}. The patterns detected here might be helpful in adjusting the signal function, which is controlled by \emph{signal.fn()} argument in \code{estimate.wqs}.
-
-The third histogram, \strong{hist.wqs}, shows the range of overall chemical index, or WQS, across each bootstrap. Due to constraints, this always is between 0 and \emph{n.quantiles - 1}.
-
-Plots no longer saved automatically; please save manually using \code{\link[ggplot2]{ggsave}}().
+}
+\note{
+Defunct argument \code{filename} has been removed. Plots are no longer saved automatically; please save manually using \code{\link[ggplot2]{ggsave}}().
 }
 \examples{
 # Use simulated dataset and set seed for reproducibility.
 data(simdata87)
 set.seed(23456)
-Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
-                  B = 10, family = "binomial")
+Wa <- estimate.wqs(y = simdata87$y.scenario, X = simdata87$X.true[, 1:6],
+  B = 10, family = "binomial")
 plot(Wa)
-
 }
 \seealso{
-Other wqs: \code{\link{analyze.individually}},
-  \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
-  \code{\link{estimate.wqs.formula}},
-  \code{\link{estimate.wqs}},
-  \code{\link{make.quantile.matrix}},
-  \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{analyze.individually}()},
+\code{\link{coef.wqs}()},
+\code{\link{do.many.wqs}()},
+\code{\link{estimate.wqs.formula}()},
+\code{\link{estimate.wqs}()},
+\code{\link{make.quantile.matrix}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{wqs}

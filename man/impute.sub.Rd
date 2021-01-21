@@ -20,7 +20,7 @@ A n x C matrix where the BDL values of each chemical are substituted by its dete
 The values below the detection limit for each chemical are substituted by its detection limit/sqrt(2).
 }
 \details{
-A n x C matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider chemical concentrations \emph{X} with each being partially observed.
+A n x C matrix of components \emph{X} are interval-censored between zero and different detection limits \emph{DL}. Although \emph{X} may refer to a variable with no obvious \emph{DL}, we consider each chemical concentration being partially observed in mixture \emph{X}.
 }
 \examples{
 data("simdata87")
@@ -31,11 +31,12 @@ X.sub <- impute.sub(X = simdata87$X.bdl, DL = simdata87$DL, verbose = TRUE)
 probs <- c(0.01, 0.05, 0.09, 0.25, 0.5, 0.8, 1)
 apply(X.sub, 2, quantile, probs)
 round(apply(simdata87$X.true, 2, quantile, probs), 5)
-
 }
 \seealso{
-Other imputation: \code{\link{impute.Lubin}},
-  \code{\link{impute.boot}}
+Other imputation: 
+\code{\link{impute.Lubin}()},
+\code{\link{impute.boot}()},
+\code{\link{impute.multivariate.bayesian}()}
 }
 \concept{imputation}
 \keyword{imputation}

@@ -17,10 +17,11 @@
 #'
 #' @param X       A numeric matrix. Any missing values are indicated by NA's.
 #' @inheritParams estimate.wqs
-                  # n.quantiles, verbose: passed from estimate.wqs
-#' @param ... Further arguments passed to or from other methods. Currently has no effect.
-# #' @inheritDotParams stats::quantile
-#
+# n.quantiles, verbose: passed from estimate.wqs
+#' @inheritParams stats::quantile
+# ...
+# #' @param ... Further arguments passed from other methods to stats::quantile().
+
 #' @return A matrix of quantiles with rows = nrow(X) and with columns = n.quantiles.
 
 #' @examples
@@ -36,62 +37,61 @@
 #' @import stats
 #' @export
 
-make.quantile.matrix <- function(
-            X,
-            n.quantiles,
-            place.bdls.in.Q1 = if (anyNA(X)) TRUE else FALSE,
-            ...,
-            verbose = FALSE
-          ) {
-    # Check: X must be numeric
-    no.not.numeric <- sum(apply(X, 2, class) != "numeric")
-    a <- ifelse(no.not.numeric == 0, "",
-                stop("At least one chemical in X is not numeric")
-    )
-    # If (place.bdls.in.Q1 is null, any missing values in X are automatically placed into the first quantile; otherwise, if complete X values are observed, it is false.
-   # if (is.null(place.bdls.in.Q1))  place.bdls.in.Q1 <- anyNA(X)
+make.quantile.matrix <- function(X,
+                                 n.quantiles,
+                                 place.bdls.in.Q1 = if (anyNA(X)) TRUE else FALSE,
+                                 ...,
+                                 verbose = FALSE
+) {
+  # Check: X must be numeric
+  no.not.numeric <- sum(apply(X, 2, class) != "numeric")
+  a <- ifelse(no.not.numeric == 0, "",
+    stop("At least one chemical in X is not numeric")
+  )
+  # If (place.bdls.in.Q1 is null, any missing values in X are automatically placed into the first quantile; otherwise, if complete X values are observed, it is false.
+  # if (is.null(place.bdls.in.Q1))  place.bdls.in.Q1 <- anyNA(X)
 
-    if (!place.bdls.in.Q1) {
-      message("#> No missing values in matrix detected. Regular quantiles computed.")
-      # Find the quantile for each columns
-      q <- matrix(-20, dim(X)[1], dim(X)[2])
-      I <- dim(X)[2]
-      for (i in 1:I) {
-        x.break <- stats::quantile(X[, i],  probs = c(0:n.quantiles / n.quantiles),
-                                   na.rm = FALSE, names = TRUE, type = 7,  ...)
-        # print(x.break)
-        # q[, i] <- q.cut <- cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE) -1
-        q[, i] <- .bincode(X[, i], breaks = x.break, include.lowest = TRUE) - 1
-      }
-    } else {
-      message("#> All BDLs are placed in the first quantile")
-      q <- matrix(-10, dim(X)[1], dim(X)[2])
-      I <- dim(X)[2]
-      for (i in 1:I) {
-        # For those observed, divide up the quantiles - 1.
-        x.break <- stats::quantile(X[, i],  probs = c(0:(n.quantiles - 1) / (n.quantiles - 1)),
-                                   na.rm = TRUE,   names = TRUE, type = 7, ...)
-        q[, i] <-  cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE)
-
-        # Let the first quantile be all the BDLs.
-        q[which(is.na(q[, i])), i] <- 0
-      }
+  if (!place.bdls.in.Q1) {
+    message("#> No missing values in matrix detected. Regular quantiles computed.")
+    # Find the quantile for each columns
+    q <- matrix(-20, dim(X)[1], dim(X)[2])
+    I <- dim(X)[2]
+    for (i in 1:I) {
+      x.break <- stats::quantile(X[, i],  probs = c(0:n.quantiles / n.quantiles),
+        na.rm = FALSE, names = TRUE, type = 7,  ...)
+      # print(x.break)
+      # q[, i] <- q.cut <- cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE) -1
+      q[, i] <- .bincode(X[, i], breaks = x.break, include.lowest = TRUE) - 1
     }
+  } else {
+    message("#> All BDLs are placed in the first quantile")
+    q <- matrix(-10, dim(X)[1], dim(X)[2])
+    I <- dim(X)[2]
+    for (i in 1:I) {
+      # For those observed, divide up the quantiles - 1.
+      x.break <- stats::quantile(X[, i],  probs = c(0:(n.quantiles - 1) / (n.quantiles - 1)),
+        na.rm = TRUE,   names = TRUE, type = 7, ...)
+      q[, i] <-  cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE)
 
-    # Checking the method: show only if verbose = TRUE.
-    if (verbose) {
-      cat("##> Summary of Quantiles \n")
-      print(apply(q, 2, table))
-      cat("##> Total Number of NAs--Q1 (The first row) should match.\n")
-      cat(t(apply(X, 2, function(i) {sum(is.na(i)) })))
-      # cat ("\n Summaries: (a) Matrix \n")
-      #  print(   apply(X, 2, my.summary ) )
-      # cat("\n Summaries: (a) Quantiles \n")
-      #  print(   apply(q, 2, my.summary ) )
+      # Let the first quantile be all the BDLs.
+      q[which(is.na(q[, i])), i] <- 0
     }
+  }
 
-    # Return the quantiles.
-    return(q)
+  # Checking the method: show only if verbose = TRUE.
+  if (verbose) {
+    cat("##> Summary of Quantiles \n")
+    print(apply(q, 2, table))
+    cat("##> Total Number of NAs--Q1 (The first row) should match.\n")
+    cat(t(apply(X, 2, function(i) {sum(is.na(i)) })))
+    # cat ("\n Summaries: (a) Matrix \n")
+    #  print(   apply(X, 2, my.summary ) )
+    # cat("\n Summaries: (a) Quantiles \n")
+    #  print(   apply(q, 2, my.summary ) )
+  }
+
+  # Return the quantiles.
+  return(q)
 }
 
 

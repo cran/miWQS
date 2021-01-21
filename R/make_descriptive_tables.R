@@ -1,91 +1,91 @@
-# #  In makeJournalTables: Don't export.
-#  #' Makes a typical Table 1 Covariate Summary in journal report.
-#  #'
-#  #'@family format
-#  #'@keywords format
-#  #'
-#  #'@description  A summary of numerical and categorical covariates overall and across the treatment groups. Numbers and
-#  #' frequencies summarize categorical variables (using \code{formatZ}), means and sds summarize numeric variables (using \code{formatMeanSd}). Fisher's
-#  #' Exact Test (only for 2 levels), Pearson's general chi square ( > 2 levels), or Wilcoxon's Signed Rank Test were done
-#  #' for categorical or numerical ones respectively. P-values were rounded to 3 digits; the other statistics can be adjusted
-#  #' using the digits option. The data frame produced, summary.cov, can be copied and pasted into a Table 1 in a report. The data
-#  #'  frame also consists a column of names that makes it easy to subset and resort as desired.
-#  #'
-#  #'@details  A dataset needs to be split up into numeric covariates and categorical covariates. This can be done using summary commands. If there
-#  #'are no numeric covariates, either enter NULL or have a dataset be with 0 columns. Similar is true with categorical covariates.
-#  #'
-#  #'With respect to the output, the user can easily export using write.csv(), and using the first column,
-#  #'sort by covariate name to obtain those desired. The other columns are formatted to be copied and
-#  #'paste into a peer-reviewed descriptive table.
-#  #'
-#  #'@note
-#  #'\code{make.descriptive.table} uses most of the other functions to achieve this result.
-#  #'
-#  #'Please specify at least one of covariate.num or covariate.fac; if they are both missing, there is nothing to summarize.
-#  #'
-#  #'The "..." argument consists of the digits argument and other arguments as listed in \code{\link[base]{format}}.
-#  #'The format.pval function is used to format P-values, which is imported from Hmisc.
-#  #'
-#  #'@param covariate.num A dataframe or matrix consisting of columns for the numeric covariates. Check with a summary.
-#  #'                     If there are none, put in NULL, or have a dataframe or matrix with 0 columns.
-#  #'@param covariate.fac A dataframe or matrix consisting of columns for character covariates. Check with a summary.
-#  #'                     If there are none, put in NULL, or have a dataframe or matrix with 0 columns
-#  #'@param treatment     The treatment variable or case/control variable -- whatever variable used to
-#  #'                     distinguish between groups. Must be a character or factor.
-#  #'@inheritParams format.pval
-#  #'@param ... Additional parameters passed to \code{\link[base]{format}} in formatting means/sd, percentages,
-#  #' and p-values. The functions \code{formatMeanSd}, \code{format.mean.z}, \code{\link[Hmisc]{format.pval}}
-#  #' for help on these options.
-#  #'@return A data frame with columns consisting of: \describe{
-#  #'  \item{name}{The name of covariate : useful in sorting the table}
-#  #'  \item{covariate}{ The levels of covariate}
-#  #'  \item{...}{Varies; Overall and levels of treatment variable; the statistics are printed here.}
-#  #'  \item{p.value}{The P-value of test calculated}
-#  #'  \item{which.test}{ Which test is used (Wilcoxon, ChiSquare, or Fisher's Exact Test). Can easily transport this using footnotes}
-#  #'  \item{sig}{ A mark indicating if P-value is significant. An * is given if P-value < 0.05; NS (non-significant) is given if P-value > 0.05. Some journals like to mark significance so it is included here.} }
-#  #'
-#  #'@examples
-#  #'\dontrun{
-#  #' #Example 1
-#  #' #Use the CO2 dataset from dataset package. Edit the CO2 dataset
-#  #' #so that the treatment has unequal number of chilled and unchilled.
-#  #' data(CO2)
-#  #' co2 <- CO2
-#  #' co2$Treatment[1:10] <- "chilled"
-#  #' summary(co2)
-#  #'
-#  #' #Example 1a: numerical summary only
-#  #' make.descriptive.table( covariate.num =  co2[ ,4:5], treatment = co2$Treatment)
-#  #'
-#  #' #Example 1b: categorical summary only
-#  #' make.descriptive.table( covariate.num = NULL,
-#  #'                     covariate.fac =  co2[ , 2, drop = FALSE], co2$Treatment)
-#  #'
-#  #' #Example 1c: Both are missing: Nothing to analyze.
-#  #' \donttry{ make.descriptive.table(NULL, NULL, co2$Treatment)  }
+# In makeJournalTables: Don't export
+#
+#'  Makes a typical Table 1 Covariate Summary in journal report.
+#'
+#' @family format
+#' @keywords format
+#'
+#' @description  A summary of numerical and categorical covariates overall and across the treatment groups. Numbers and frequencies summarize categorical variables (using \code{formatZ}), means and sds summarize numeric variables (using \code{formatMeanSd}). Fisher's Exact Test (only for 2 levels), Pearson's general chi square ( > 2 levels), or Wilcoxon's Signed Rank Test were done for categorical or numerical ones respectively. P-values were rounded to 3 digits; the other statistics can be adjusted using the digits option. The data frame produced, summary.cov, can be copied and pasted into a Table 1 in a report. The dataframe also consists a column of names that makes it easy to subset and resort as desired.
+#'
+#' @details
+#'  A dataset needs to be split up into numeric covariates and categorical covariates. This can be done using summary commands. If there are no numeric covariates, either enter NULL or have a dataset be with 0 columns. Similar is true with categorical covariates.
+#'
+#' With respect to the output, the user can easily export using write.csv(), and using the first column, sort by covariate name to obtain those desired. The other columns are formatted to be copied and paste into a peer-reviewed descriptive table.
+#'
+#' @note
+#' \code{make.descriptive.table} uses most of the other functions to achieve this result.
+#'
+#' Please specify at least one of covariate.num or covariate.fac; if they are both missing, there is nothing to summarize.
+#'
+#' The "..." argument consists of the digits argument and other arguments as listed in \code{\link[base]{format}}.
+#' The format.pval function is used to format P-values, which is imported from Hmisc.
+#'
+#' @param covariate.num A dataframe or matrix consisting of columns for the numeric covariates. Check with a summary. If there are none, put in NULL
+#' @param covariate.fac A dataframe or matrix consisting of columns for character covariates. Check with a summary. If there are none, put in NULL
+#' @param treatment     The treatment variable or case/control variable -- whatever variable used to distinguish between groups. Must be a character or factor.
+#' @param digits   --Number of digits to be passed.
+#' @inheritParams format.pval
+#' @param ...  Additional arguments passed to code{\link[base]{format}} in formatting means/sd, percentages,and p-values. (except for drop0trailing is always FALSE)
+#  Additional arguments passed to \code{\link[base]{format}}
+#  (See functions \code{formatMeanSd}, \code{format.mean.z}, \code{\link[Hmisc]{format.pval}})
+#  for help on these options.
 
-#  #' #Example 1d: Both types of covariates.
-#  #' summary.cov <- make.descriptive.table( covariate.num =  co2[ ,4:5],
-#  #'                                       covariate.fac = co2[ , 2, drop = FALSE],
-#  #'                                       treatment = co2$Treatment)
-#  #' unique(warnings())
-#  #' print(summary.cov)
-#  #' #Can write to csv and share with collaborators.
-#  #'
-#  #' #Example 2: Alter the example to include missing values and do a summary.
-#  #' co2[ 42,"conc"] <- NA
-#  #' co2[ 45, "uptake"] <- NA
-#  #' summary(co2)
-#  #' make.descriptive.table( covariate.num =  co2[ ,4:5],
-#  #'                        covariate.fac = co2[ , 2, drop = FALSE],   co2$Treatment)
+#' @return A data frame with columns consisting of: \describe{
+#'   \item{name}{The name of covariate : useful in sorting the table}
+#'   \item{covariate}{ The levels of covariate}
+#'   \item{...}{Varies; Overall and levels of treatment variable; the statistics are printed here.}
+#'   \item{p.value}{The P-value of test calculated}
+#'   \item{which.test}{ Which test is used (Wilcoxon, Chi Square, or Fisher's Exact Test). Can easily transport this using footnotes}
+#'   \item{sig}{ A mark indicating if P-value is significant. An * is given if P-value < 0.05; NS (non-significant) is given if P-value > 0.05. Some journals like to mark significance so it is included here.} }
+#'
+#' @examples
+#' \dontrun{
+#'  #Example 1
+#'  #Use the CO2 dataset from dataset package. Edit the CO2 dataset
+#'  #so that the treatment has unequal number of chilled and unchilled.
+#'  data(CO2)
+#'  co2 <- CO2
+#'  co2$Treatment[1:10] <- "chilled"
+#'  summary(co2)
+#'
+#'  #Example 1a: numerical summary only
+#'  make.descriptive.table( covariate.num =  co2[ ,4:5], treatment = co2$Treatment)
+#'
+#'  #Example 1b: categorical summary only
+#'  make.descriptive.table( covariate.num = NULL,
+#'                      covariate.fac =  co2[ , 2, drop = FALSE], co2$Treatment)
+#'
+#'  #Example 1c: Both are missing: Nothing to analyze.
+#'  \dontrun{make.descriptive.table(NULL, NULL, co2$Treatment)}
 
-#  #' }
-#  #'
-#  #'@importFrom Hmisc format.pval
-#  #'@export
+#'  #Example 1d: Both types of covariates.
+#'  summary.cov <- make.descriptive.table( covariate.num =  co2[ ,4:5],
+#'                                        covariate.fac = co2[ , 2, drop = FALSE],
+#'                                        treatment = co2$Treatment)
+#'  unique(warnings())
+#'  print(summary.cov)
+#'  #Can write to csv and share with collaborators.
+#'
+#'  #Example 2: Alter the example to include missing values and do a summary.
+#'  co2[ 42,"conc"] <- NA
+#'  co2[ 45, "uptake"] <- NA
+#'  summary(co2)
+#'  make.descriptive.table( covariate.num =  co2[ ,4:5],
+#'                         covariate.fac = co2[ , 2, drop = FALSE],   co2$Treatment)
+#'  }
+#'
+#' @section warning:
+#'   There will be issues if covariate.num or covariate.fac has 0 columns. If this is the case,
+#'   please reformat by setting it to NULL.
+#'
+#' @importFrom Hmisc format.pval
+# #' @export
+#' @noRd
 
-make.descriptive.table <- function(covariate.num = NULL, covariate.fac = NULL, treatment,
-                                    na.form = "NA", ...) {
+make.descriptive.table <- function(
+  covariate.num = NULL, covariate.fac = NULL, treatment,
+  digits = max(1, .Options$digits - 2),
+  na.form = "NA", ...) {
  # require(Hmisc) #for format.pval function
 
   ## Check at least one of covariate.num and covariate.fac should not be NULL
@@ -94,17 +94,14 @@ make.descriptive.table <- function(covariate.num = NULL, covariate.fac = NULL, t
           be non-null.", call. = FALSE)
   }
 
- cat("A summary of numerical and categorical covariates overall and across the treatment groups.
-     Numbers and frequencies summarize categorical variables, means and sds summarize numeric variables.
-     Fisher's Exact Test (only for 2 levels), Pearson's general chi square ( > 2 levels),  or Wilcoxon Signed Rank
-     Test were done for categorical or numerical ones respectively. P-values were rounded to 3 digits. \n\n ")
+message("A summary of numerical and categorical covariates overall and across the treatment groups. Numbers and frequencies summarize categorical variables, means and sds summarize numeric variables. Fisher's Exact Test (only for 2 levels), Pearson's general chi square ( > 2 levels),  or Wilcoxon Signed Rank Test were done for categorical or numerical ones respectively. P-values were rounded to 3 digits. \n\n ")
 
 
   ## Initalize data frame to return
   summary.cov <- NA
 
   ## Summarize numeric covariates, only if non-null or has 0 columns.
-  if (is.null(covariate.num) | ncol(covariate.num) == 0) {
+  if (is.null(covariate.num)) {
     warning("There are no numeric covariates to summarize. \n")
   } else {
     # Convert covariate.num into a matrix if data.frame
@@ -121,14 +118,16 @@ make.descriptive.table <- function(covariate.num = NULL, covariate.fac = NULL, t
     for (i in 1:ncol(covariate.num)) {
 
       # Dissect pieces needed.
-      name =  colnames(covariate.num)[i]
-      overall   =  f(covariate.num[, i])
+      name <- colnames(covariate.num)[i]
+      overall <-  f(covariate.num[, i])
 
       tmp <-  data.frame(numb = as.numeric(covariate.num[, i]), caco = treatment)
       by.treat <- aggregate(numb ~ caco, data = tmp, f)
       row.names(by.treat[, 2]) <- by.treat$caco
       A <- data.frame(overall = overall, t(by.treat[, 2]))
-      formatted.A <- formatMeanSd(t(A[1:2, ]),  ...)
+      formatted.A <- suppressWarnings(
+        formatMeanSd(t(A[1:2, ]),  digits = digits, ...)
+      )
       stats <-  rbind(t(formatted.A),
                        paste0(as.character(A["missing", ]),  ",")
       )
@@ -150,30 +149,30 @@ make.descriptive.table <- function(covariate.num = NULL, covariate.fac = NULL, t
      summary.cov$which.test <- "wilcox.test,"
   } # end numeric summary
 
-  ## Factor Summaries if non-null or 0 columns.
-  if (is.null(covariate.fac) | ncol(covariate.fac) == 0) {
+  ## Factor Summaries if non-null.
+  if (is.null(covariate.fac)) {
     warning("There are no categorical covariates to summarize. \n")
   } else {
     # Calculate Freqs & Percents differently if have missing values. Used twice in missing if/else
     # statement.
-    # #  #'@param freq The frequency of a categorical variable
-    # #  #'@inheritDotParams formatZ
-    calculate.stats <- function(freq, ...) {
+    # #' @param freq The frequency of a categorical variable
+    # #' @inheritDotParams formatZ
+    calculate.stats <- function(freq, digits, ...) {
       proportion <- prop.table (freq, margin = 2) * 100
       v <- matrix(NA, nrow = nrow(freq), ncol = 3)
       for (j in 1:3) {
-        v[, j] <- formatZ(freq[, j], proportion[, j], ...)
+        v[, j] <- formatZ(freq[, j], proportion[, j], digits, ...)
       }
       # v <- mapply( formatZ, data, MoreArgs = list( ... ))
-      stats <- matrix(v, nrow(proportion), ncol(proportion), byrow = F, dimnames(proportion))
+      stats <- matrix(v, nrow(proportion), ncol(proportion), byrow = FALSE, dimnames(proportion))
       return(stats)
     }
 
     which.test <- rep("", ncol(covariate.fac));  names(which.test) <- colnames(covariate.fac)
     for (i in 1:ncol(covariate.fac)) {
       # Dissect pieces needed.
-      cov.name = colnames(covariate.fac)[i]
-      freq = cbind(
+      cov.name <- colnames(covariate.fac)[i]
+      freq <- cbind(
         overall   = table(covariate.fac[, i], useNA = "ifany"),
         table(covariate.fac[, i], treatment, useNA = "ifany")
         )

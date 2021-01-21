@@ -4,16 +4,14 @@
 \alias{do.many.wqs}
 \title{Performing Many WQS Regressions}
 \usage{
-do.many.wqs(y, X.imputed, Z = NULL, B = 100L, ...)
+do.many.wqs(y, X.imputed, Z = NULL, ...)
 }
 \arguments{
-\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution given in \code{family}.}
+\item{y}{Outcome: numeric vector or factor. Assumed to be complete, and missing outcomes are ignored. Assumed to follow an exponential family distribution given in \code{family}.}
 
 \item{X.imputed}{Array of complete components with n subjects and C components and K imputations. Must be complete.}
 
 \item{Z}{Any covariates used. Ideally, a numeric matrix, but Z can be a factor, vector or data-frame. Assumed to be complete; observations with missing covariate values are ignored with a warning printed. If none, enter NULL.}
-
-\item{B}{Number of bootstrap samples to be used in estimating the weights in the training dataset. In order to use WQS without bootstrapping, set B = 1. However, Carrico et al 2014 suggests that bootstrap some large number (like 100 or 1000) can increase component selection. In that spirit, we set the default to 100.}
 
 \item{...}{Additional arguments passed to \code{estimate.wqs}, but the arguments y, X, Z, and place.bdls.Q1 have no effect.}
 }
@@ -39,23 +37,21 @@ Returns a list with elements that consist of matrix and list versions of \code{e
      }
 }
 \description{
-Second Stage of Multiple Imputation:  In order to analyze a complete imputed chemical array (X.imputed, n subjects by C chemicals by K imputations) via weighted quantile sum regression, \code{do.many.wqs}() repeatedly performs the same WQS analysis on each imputed dataset. It repeatedly executes the \code{\link{estimate.wqs}}() function.
+Second Stage of Multiple Imputation:  In order to analyze a complete imputed chemical array (\code{X.imputed}), _n_ subjects by _C_ chemicals by _K_ imputations) via weighted quantile sum regression, \code{do.many.wqs}() repeatedly performs the same WQS analysis on each imputed dataset. It repeatedly executes the \code{\link{estimate.wqs}}() function.
 }
 \note{
 Note #1: We only impute the missing values of the components, X. Any missing data in the outcome and covariates are removed and ignored.
 
  Note #2: No seed is set in this function. Because bootstraps and splitting is random,  a seed should be set before every use.
 
- Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} was not designed in this case.
+ Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} is not necessary.
 }
 \examples{
-#Example takes 11 seconds -- too long to run.
-\dontrun{
 data("simdata87")
 # Create 2 multiple imputed datasets using bootstrapping, but only use first 2 chemicals.
 set.seed(23234)
 l <- impute.boot(
-  X = simdata87$X.bdl[ , 1:2], DL = simdata87$DL[1:2],
+  X = simdata87$X.bdl[, 1:2], DL = simdata87$DL[1:2],
   Z = simdata87$Z.sim[, 1], K = 2
 )
 # Perform WQS regression on each imputed dataset
@@ -63,20 +59,23 @@ set.seed(50679)
 bayes.wqs <- do.many.wqs(
   y = simdata87$y.scenario, X.imputed = l$X.imputed,
   Z = simdata87$Z.sim,
-  B = 2, family = "binomial"
+  B = 10, family = "binomial"
 )
 bayes.wqs$wqs.imputed.estimates
-}
 
-# @importFrom scales ordinal
+
+
+# #' @importFrom scales ordinal
 }
 \seealso{
-Other wqs: \code{\link{analyze.individually}},
-  \code{\link{coef.wqs}},
-  \code{\link{estimate.wqs.formula}},
-  \code{\link{estimate.wqs}},
-  \code{\link{make.quantile.matrix}},
-  \code{\link{plot.wqs}}, \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{analyze.individually}()},
+\code{\link{coef.wqs}()},
+\code{\link{estimate.wqs.formula}()},
+\code{\link{estimate.wqs}()},
+\code{\link{make.quantile.matrix}()},
+\code{\link{plot.wqs}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{wqs}

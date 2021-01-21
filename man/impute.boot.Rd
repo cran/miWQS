@@ -13,7 +13,7 @@ impute.boot(X, DL, Z = NULL, K = 5L, verbose = FALSE)
 
 \item{Z}{Any covariates used in imputing the chemical concentrations.  Ideally, a numeric matrix; however, Z can be a factor, vector, or data-frame. Assumed to be complete; observations with missing covariate variables are ignored in the imputation, with a warning printed. If none, enter NULL.}
 
-\item{K}{A natural number of imputed datasets to generate. Defaults: 5L.}
+\item{K}{A natural number of imputed datasets to generate. Default: 5L.}
 
 \item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
@@ -52,14 +52,14 @@ Note #1: Code was adapted from Erin E. Donahue's original translation of the SAS
 
 Note #2: No seed is set. Please set seed so the same bootstraps are selected.
 
-Note #3: If the length of the DL parameter is greater than the number of components, the smallest value is assumed to be a detection limit. A warning is printed to screen.
+Note #3: If the length of the DL parameter is greater than the number of components, the smallest value is assumed to be a detection limit. A warning is printed to the screen.
 }
 \examples{
 data("simdata87")
 # Impute using one covariate.
 l <- impute.boot(X = simdata87$X.bdl, DL = simdata87$DL, Z = simdata87$Z.sim[, 1],
-                 K = 2, verbose = TRUE
-                 )
+  K = 2, verbose = TRUE
+)
 apply(l$X.imputed, 2:3, summary)
 }
 \references{
@@ -68,8 +68,10 @@ Epidemiologic Evaluation of Measurement Data in the Presence of Detection Limits
  112(17), 1691–1696. https://doi.org/10.1289/ehp.7199
 }
 \seealso{
-Other imputation: \code{\link{impute.Lubin}},
-  \code{\link{impute.sub}}
+Other imputation: 
+\code{\link{impute.Lubin}()},
+\code{\link{impute.multivariate.bayesian}()},
+\code{\link{impute.sub}()}
 }
 \concept{imputation}
 \keyword{imputation}

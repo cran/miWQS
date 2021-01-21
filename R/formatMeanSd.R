@@ -57,7 +57,7 @@ formatMeanSd <- function(x, digits = 2, ...) {
   v.formatted <- rep(NA, nrow(v))
   names(v.formatted) <- rownames(v)
   for (j in 1:nrow(v)) {
-    v.formatted[j]   <-  paste0 (v.look[j, 1], " +- ",  v.look[j, 2], ",")
+    v.formatted[j]   <-  paste0 (v.look[j, 1], " +- ",  v.look[j, 2])
   }
 
   return(as.matrix(v.formatted))

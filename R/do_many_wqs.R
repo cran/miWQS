@@ -4,14 +4,14 @@
 #' @keywords wqs
 
 #' @description
-#' Second Stage of Multiple Imputation:  In order to analyze a complete imputed chemical array (X.imputed, n subjects by C chemicals by K imputations) via weighted quantile sum regression, \code{do.many.wqs}() repeatedly performs the same WQS analysis on each imputed dataset. It repeatedly executes the \code{\link{estimate.wqs}}() function.
+#' Second Stage of Multiple Imputation:  In order to analyze a complete imputed chemical array (\code{X.imputed}), _n_ subjects by _C_ chemicals by _K_ imputations) via weighted quantile sum regression, \code{do.many.wqs}() repeatedly performs the same WQS analysis on each imputed dataset. It repeatedly executes the \code{\link{estimate.wqs}}() function.
 #'
 #' @note
 #'  Note #1: We only impute the missing values of the components, X. Any missing data in the outcome and covariates are removed and ignored.
 #'
 #'  Note #2: No seed is set in this function. Because bootstraps and splitting is random,  a seed should be set before every use.
 #'
-#'  Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} was not designed in this case.
+#'  Note #3: If there is one imputed dataset, use the \code{\link{estimate.wqs}} function as \code{do.many.wqs} is not necessary.
 
 ############### Arguments & Return ##########################
 # Imputation parameter
@@ -47,13 +47,11 @@
 
 ############### EXAMPLES ############################
 #' @examples
-#' #Example takes 11 seconds -- too long to run.
-#' \dontrun{
 #' data("simdata87")
 #' # Create 2 multiple imputed datasets using bootstrapping, but only use first 2 chemicals.
 #' set.seed(23234)
 #' l <- impute.boot(
-#'   X = simdata87$X.bdl[ , 1:2], DL = simdata87$DL[1:2],
+#'   X = simdata87$X.bdl[, 1:2], DL = simdata87$DL[1:2],
 #'   Z = simdata87$Z.sim[, 1], K = 2
 #' )
 #' # Perform WQS regression on each imputed dataset
@@ -61,15 +59,16 @@
 #' bayes.wqs <- do.many.wqs(
 #'   y = simdata87$y.scenario, X.imputed = l$X.imputed,
 #'   Z = simdata87$Z.sim,
-#'   B = 2, family = "binomial"
+#'   B = 10, family = "binomial"
 #' )
 #' bayes.wqs$wqs.imputed.estimates
-#' }
 #'
-#' # @importFrom scales ordinal
+#'
+#'
+#' # #' @importFrom scales ordinal
 #' @export
 
-do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
+do.many.wqs <- function(y, X.imputed, Z = NULL, ...) {
   # Check
   if (anyNA(X.imputed)) {
     stop("Some components in X.imputed are missing")
@@ -79,14 +78,23 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
   n <- dim(X.imputed)[[1]]
   C <- dim(X.imputed)[[2]]
   K <- if (is(X.imputed, "array")) {  dim(X.imputed)[[3]] } else { 1 }
-  if (is(Z, "numeric"))  Z <- as.matrix(Z)
-  t.p <- C + 2 + ifelse(is.null(Z), 0, ncol(Z) + 50)
+  Z.model <-
+    if (is.null(Z)) {
+      NULL
+    } else {
+      model.matrix(y ~ ., data = data.frame(y = y, Z))[, -1, drop = FALSE]
+    }
+  p <- if (is.null(Z)) { 0 } else { ncol(Z.model) }
+  t.p <- C + 2 + p
   # Note: If data-frame Z is present, any categorical covariates are translated in estimate.wqs() to
   # a matrix with more columns than those in Z. These additional columns are dummy variables reflecting
   # the number of levels in each categorical covariate - 1. 50 is a high-end guess of number of
   # additional columns needed.
-  cat("#> Number of chemicals: ", ncol(X.imputed), ";",
-          "Number of completed datasets: ", K, "\n",  sep = ""
+  cat("#> Sample size: ", n, "; ",
+    "Number of chemicals: ", C, "; \n",
+    "Number of completed datasets: ", K, "; ",
+    "Number of covariates modeled:  ", p,
+    "\n",  sep = ""
   )
   # "; Number of total parameters:", t.p , #all weights + intercept & WQS + covariates
 
@@ -96,7 +104,7 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
   initial <- NA
   train.estimates <- NA
   fit.validate <- vector("list", length = K)
-  WQS <- matrix(NA, nrow = n, ncol = K, dimnames = list(NULL, paste0("Imputed.", 1:K)))
+  WQS <- NA
   wqs.imputed.estimates <- array(NA,
     dim = c(t.p, 2, K),
     dimnames = list(
@@ -113,12 +121,19 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
     # if(verbose){print(wqs.imputed)}
 
     # Save things from WQS
-    AIC[k] <- AIC(wqs.imputed$fit) # Assessing Fit of Model
-    train.comparison[[k]] <- wqs.imputed$train.comparison # comparision of train and valdiation sets.
-    initial <- cbind(initial, wqs.imputed$initial) # initial values
-    train.estimates <- rbind(train.estimates, data.frame(wqs.imputed$train.estimates, boot = 1:B, imputed = k))
-    fit.validate[[k]] <- wqs.imputed$fit # Keep validation model glm2 object;
-    WQS[, k] <- wqs.imputed$WQS
+    AIC[k] <- AIC(wqs.imputed$fit)      # Assessing Fit of Model
+    train.comparison[[k]] <-            # comparision of train and valdiation sets.
+      wqs.imputed$train.comparison
+    initial <- cbind(initial,            # initial values
+      wqs.imputed$initial
+    )
+    train.estimates <- rbind(train.estimates,
+      data.frame(wqs.imputed$train.estimates,
+        boot = 1:wqs.imputed$call$B,
+        imputed = k)
+    )
+    fit.validate[[k]] <- wqs.imputed$fit    # Keep validation model glm2 object;
+    WQS <- cbind(WQS, wqs.imputed$WQS)
     # boot.index.sample[ , , k] <- wqs.imputed$boot.index
 
     # Keep estimates for pooling
@@ -139,6 +154,10 @@ do.many.wqs <- function(y, X.imputed, Z = NULL, B = 100L, ...) {
   # Format train.estimates
   train.estimates <- train.estimates[-1, ] # remove NA row when I initialize it.
   rownames(train.estimates) <- NULL
+
+  # Format WQS
+  WQS <- WQS[, -1]
+  dimnames(WQS) <- list(NULL, paste0("Imputed.", 1:K))
 
   # Save the call:
   D <- formals(do.many.wqs) # Make defaults of function as a list.

@@ -4,7 +4,8 @@
 \name{simdata87}
 \alias{simdata87}
 \title{Simulated Dataset 87}
-\format{A list that contains: \itemize{
+\format{
+A list that contains: \itemize{
   \item y.scenario: A binary outcome (1 = case, 0 = control)
   \item X.true: 14 chemicals; complete data.
   \item X.bdl: 14 chemicals with NA's subbed for the bottom 10th percentile of the true values.
@@ -12,13 +13,13 @@
   \item n0: A vector of length 14 indicating the number of non-detects.
   \item delta: A vector of length 14 indicating whether the chemical is observed (1) or not (0)
   \item Z.sim: A data-frame of covariates consisting of: \itemize{
-         \item Age: A continuous covariate of child's age , simulated using normal with
-          mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of leukemia.
+         \item Age: A continuous covariate of child's age , simulated using normal with mean of 3.78 and sd of 1.85, truncated between 0 and 8, the maximum age of the case.
          \item Female: Binary variable child's sex, simulated using the proportion of females (0.42) by binomial distribution.
          \item Hispanic, Non-Hispanic_Others: Two indicator variables of child's race/ethnicity, sampled from independent binomial distributions  (proportion of Hispanic: 0.33; proportion of Other: 0.23).
          }
   \item time: The time required to simulate the data.
-  }}
+  }
+}
 \usage{
 data(simdata87)
 }

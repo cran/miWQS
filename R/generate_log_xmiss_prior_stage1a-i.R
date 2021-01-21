@@ -67,7 +67,7 @@
 
 
 generate.log.xmiss.prior <- function(x.miss.type = c("uniform", "vague"),
-                              n0, DL) {  # passed from other functions
+                                     n0, DL) {  # passed from other functions
 
   # Checks if there are any NA's in the Detection Limit
   stopifnot(sum(is.na(DL)) == 0)

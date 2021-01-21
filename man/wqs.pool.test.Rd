@@ -4,11 +4,13 @@
 \name{wqs.pool.test}
 \alias{wqs.pool.test}
 \title{Combining WQS Regression Estimates}
-\format{An array of 16 x 2 x 3, with \itemize{
+\format{
+An array of 16 x 2 x 3, with \itemize{
 \item 16 parameters as the rows (The 14 weights, intercept, and WQS estimate of a WQS model),
 \item 2 refers to the parameters of mean and standard deviation
 \item K=3 complete imputed datasets.
-}}
+}
+}
 \usage{
 data(wqs.pool.test)
 }
@@ -17,7 +19,6 @@ data(wqs.pool.test)
 }
 \examples{
 wqs.pool.test <- data(wqs.pool.test)
-
 # stage_3_pool_mi_example
 }
 \seealso{

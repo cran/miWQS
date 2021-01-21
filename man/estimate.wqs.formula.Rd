@@ -7,7 +7,7 @@
 estimate.wqs.formula(formula, data, chem_mix, ..., verbose = FALSE)
 }
 \arguments{
-\item{formula}{An object of class "formula" that consists of an outcome, chemical mixture, and if any, covariates. See \code{\link[stats]{formula}}.}
+\item{formula}{An object of class "formula" that consists of an outcome, chemical mixture, and covariates, if any. See \code{stats::\link[stats]{formula}}.}
 
 \item{data}{The data in a data-frame format}
 
@@ -18,44 +18,48 @@ estimate.wqs.formula(formula, data, chem_mix, ..., verbose = FALSE)
 \item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
 \description{
-A wrapper function for \code{\link{estimate.wqs}} so that a formula can be used instead.
+A wrapper function for \code{\link{estimate.wqs}} to use a formula instead.
 }
 \examples{
 
-#Example 1
+# Example 1
 set.seed(232)
 test.data <- data.frame(x1 = rlnorm(100, 3, 1), x2 = rlnorm(100, 5, 1),
-                        z1 = rlnorm(100, 10, 3), z2 = rbinom(100, 1, 0.7),
-                        y = rnorm(100, 100, 15)
+  z1 = rlnorm(100, 10, 3), z2 = rbinom(100, 1, 0.7),
+  y = rnorm(100, 100, 15)
 )
- estimate.wqs.formula(y ~., data = test.data, chem_mix = c("x1", "x2"))
-
+estimate.wqs.formula(y ~ ., data = test.data, chem_mix = c("x1", "x2"))
 \dontrun{
-#Example 2: No covariates
- estimate.wqs.formula(y~ x1 + x2, data = test.data, chem_mix = 1:2)
+# Example 2: No covariates
+estimate.wqs.formula(y ~ x1 + x2, data = test.data, chem_mix = 1:2)
 
-#Example 3: NA in Z
+# Example 3: NA in Z
 test.data$z1[10] <- NA
-estimate.wqs.formula( y ~., data = test.data, chem_mix = c("x1", "x2"))
+estimate.wqs.formula(y ~ ., data = test.data, chem_mix = c("x1", "x2"))
 
-#Example 4: NA in Z and y
- test.data$y[1] <- NA
- estimate.wqs.formula( y ~., data = test.data, chem_mix = c("x1", "x2"))
+# Example 4: NA in Z and y
+test.data$y[1] <- NA
+estimate.wqs.formula(y ~ ., data = test.data, chem_mix = c("x1", "x2"))
 
 
-#Example 5: NA in Z, X, and y
+# Example 5: NA in Z, X, and y
 test.data$x1[2] <- NA
-estimate.wqs.formula( y ~., data = test.data, chem_mix = c("x1", "x2"),
-                           place.bdls.in.Q1 = TRUE
+estimate.wqs.formula(y ~ ., data = test.data, chem_mix = c("x1", "x2"),
+  place.bdls.in.Q1 = TRUE
 )
-} #due to time constraints
+# due to time constraints
+}
+
 }
 \seealso{
-Other wqs: \code{\link{analyze.individually}},
-  \code{\link{coef.wqs}}, \code{\link{do.many.wqs}},
-  \code{\link{estimate.wqs}},
-  \code{\link{make.quantile.matrix}},
-  \code{\link{plot.wqs}}, \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{analyze.individually}()},
+\code{\link{coef.wqs}()},
+\code{\link{do.many.wqs}()},
+\code{\link{estimate.wqs}()},
+\code{\link{make.quantile.matrix}()},
+\code{\link{plot.wqs}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{imputation}

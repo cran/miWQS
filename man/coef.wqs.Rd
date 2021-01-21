@@ -23,7 +23,7 @@ In a \strong{wqs} object, the \emph{fit} element, a \pkg{glm2} object, is extrac
 data(simdata87)
 set.seed(23456)
 Wa <- estimate.wqs(
-  y = simdata87$y.scenario, X = simdata87$X.true[ , 1:3],
+  y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
   B = 10, family = "binomial"
 )
 coef(Wa)
@@ -31,12 +31,14 @@ coef(Wa)
 \seealso{
 \code{\link[stats]{coef}}
 
-Other wqs: \code{\link{analyze.individually}},
-  \code{\link{do.many.wqs}},
-  \code{\link{estimate.wqs.formula}},
-  \code{\link{estimate.wqs}},
-  \code{\link{make.quantile.matrix}},
-  \code{\link{plot.wqs}}, \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{analyze.individually}()},
+\code{\link{do.many.wqs}()},
+\code{\link{estimate.wqs.formula}()},
+\code{\link{estimate.wqs}()},
+\code{\link{make.quantile.matrix}()},
+\code{\link{plot.wqs}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{wqs}

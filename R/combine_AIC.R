@@ -39,7 +39,7 @@ combine.AIC <- function(AIC) {
     stat <- cbind(mean = mean(AIC), sd = sd(AIC))
     # Return average model fit
     AIC.pool <- suppressWarnings(as.character(formatMeanSd(stat, nsmall = 1)))
-    AIC.pool <- strsplit(AIC.pool, ",")[[1]] #Remove the comma: Add Jul 22, 2019
+    AIC.pool <- strsplit(AIC.pool, ",")[[1]] # Remove the comma: Add Jul 22, 2019
   }
 
   return(AIC.pool)

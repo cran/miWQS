@@ -13,7 +13,7 @@ impute.Lubin(chemcol, dlcol, Z = NULL, K = 5L, verbose = FALSE)
 
 \item{Z}{Any covariates used in imputing the chemical concentrations.  Ideally, a numeric matrix; however, Z can be a factor, vector, or data-frame. Assumed to be complete; observations with missing covariate variables are ignored in the imputation, with a warning printed. If none, enter NULL.}
 
-\item{K}{A natural number of imputed datasets to generate. Defaults: 5L.}
+\item{K}{A natural number of imputed datasets to generate. Default: 5L.}
 
 \item{verbose}{Logical; if TRUE, prints more information. Useful to check for any errors in the code. Default: FALSE.}
 }
@@ -32,33 +32,36 @@ Softly DEPRECATED. Use  impute.boot instead.
 described in Lubin et al. 2004.
 }
 \examples{
-  # Apply to an example simulated dataset.
-  # A seed of 202 is executed before each run for reproducibility.
-  data(simdata87)
+#   ###Example 2: Simulation
+# Apply to an example simulated dataset.
+# A seed of 202 is executed before each run for reproducibility.
+data(simdata87)
 
-  # No Covariates
-  set.seed(202)
-  results_Lubin <- impute.Lubin(chemcol = simdata87$X.bdl[, 1], dlcol = simdata87$DL[1],
-                                K = 5, verbose = TRUE)
-  str(results_Lubin)
-  summary(results_Lubin$imputed_values)
+# No Covariates
+set.seed(202)
+results_Lubin <- impute.Lubin(chemcol = simdata87$X.bdl[, 1], dlcol = simdata87$DL[1],
+  K = 5, verbose = TRUE)
+str(results_Lubin)
+summary(results_Lubin$imputed_values)
 
-  # 1 Covariate
-  set.seed(202)
-  sim.z1 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
-                         K = 5, Z = simdata87$Z.sim[, 1], verbose = TRUE)
-  summary(sim.z1$imputed_values)
+# 1 Covariate
+set.seed(202)
+sim.z1 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
+  K = 5, Z = simdata87$Z.sim[, 1], verbose = TRUE)
+summary(sim.z1$imputed_values)
 
-  # 2 Covariates
-  set.seed(202)
-  sim.z2 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
-            K = 5, Z = simdata87$Z.sim[, -2])
-  summary(sim.z2$imputed_values)
-  summary(sim.z2$bootstrap_index)
+# 2 Covariates
+set.seed(202)
+sim.z2 <- impute.Lubin(simdata87$X.bdl[, 1], simdata87$DL[1],
+  K = 5, Z = simdata87$Z.sim[, -2])
+summary(sim.z2$imputed_values)
+summary(sim.z2$bootstrap_index)
 }
 \seealso{
-Other imputation: \code{\link{impute.boot}},
-  \code{\link{impute.sub}}
+Other imputation: 
+\code{\link{impute.boot}()},
+\code{\link{impute.multivariate.bayesian}()},
+\code{\link{impute.sub}()}
 }
 \concept{imputation}
 \keyword{imputation}

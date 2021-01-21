@@ -4,11 +4,16 @@
 \alias{analyze.individually}
 \title{Performing Individual Chemical Analysis}
 \usage{
-analyze.individually(y, X, Z = NULL, family = c("gaussian", "binomial",
-  "poisson"), offset = NULL)
+analyze.individually(
+  y,
+  X,
+  Z = NULL,
+  family = c("gaussian", "binomial", "poisson"),
+  offset = NULL
+)
 }
 \arguments{
-\item{y}{Outcome: numeric vector or factor. Assumed to follow an exponential family distribution given in \code{family}.}
+\item{y}{Outcome: numeric vector or factor. Assumed to be complete, and missing outcomes are ignored. Assumed to follow an exponential family distribution given in \code{family}.}
 
 \item{X}{Components/chemicals to be combined into an index; a numeric matrix or data-frame.}
 
@@ -18,16 +23,16 @@ analyze.individually(y, X, Z = NULL, family = c("gaussian", "binomial",
 if equal to "gaussian" a linear model is implemented;
 if equal to "binomial" a logistic model is implemented;
 if equal to "poisson", a log-link (rate or count) model is implemented.
-See \code{\link[stats]{family}} in stats package. Passed to \pkg{glm2}. Default: "gaussian".}
+See \code{\link[stats]{family}} in the \pkg{stats} package. Passed to \pkg{glm2}. Default: "gaussian".}
 
 \item{offset}{The at-risk population used as a numeric vector of length equal to the number of subjects when modeling rates in Poisson regression. Passed to \pkg{glm2}.  Default: If there is no offset, enter NULL.}
 }
 \value{
-A data-frame of statistics of individual chemical analysis is returned: \describe{
+A data-frame from statistics of individual chemical analyses is returned: \describe{
  \item{chemical.name}{name of the component}
  \item{estimate}{the estimate of log chemical effect}
  \item{Std.Error}{the standard error of log chemical effect}
- \item{AIC}{Model Fit. See \code{\link[stats]{AIC}}.}
+ \item{AIC}{Model Fit. See \code{stats::\link[stats]{AIC}}.}
  }
 }
 \description{
@@ -46,17 +51,19 @@ analyze.individually(
   y = simdata87$y.scenario, X = simdata87$X.true, Z = simdata87$Z.sim,
   family = "binomial"
 )
-# Here, most of the "Estimate", which is the log_odds of each log of the
-# chemical has on the outcome, are positive, possibly indicating a positive
-# relationship between mixture of chemicals and the outcome.
+# The "Estimate" column contains the log_odds of each log of the
+# chemical on the outcome. Most are positive, which indicates a possible
+# positive relationship between mixture of chemicals and the outcome.
 }
 \seealso{
-Other wqs: \code{\link{coef.wqs}},
-  \code{\link{do.many.wqs}},
-  \code{\link{estimate.wqs.formula}},
-  \code{\link{estimate.wqs}},
-  \code{\link{make.quantile.matrix}},
-  \code{\link{plot.wqs}}, \code{\link{print.wqs}}
+Other wqs: 
+\code{\link{coef.wqs}()},
+\code{\link{do.many.wqs}()},
+\code{\link{estimate.wqs.formula}()},
+\code{\link{estimate.wqs}()},
+\code{\link{make.quantile.matrix}()},
+\code{\link{plot.wqs}()},
+\code{\link{print.wqs}()}
 }
 \concept{wqs}
 \keyword{wqs}

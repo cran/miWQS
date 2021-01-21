@@ -21,17 +21,16 @@
 #' data(simdata87)
 #' set.seed(23456)
 #' Wa <- estimate.wqs(
-#'   y = simdata87$y.scenario, X = simdata87$X.true[ , 1:3],
+#'   y = simdata87$y.scenario, X = simdata87$X.true[, 1:3],
 #'   B = 10, family = "binomial"
 #' )
 #' coef(Wa)
 #' @importFrom stats coef
-#' @importFrom methods is
 #' @export
 
 coef.wqs <- function(object, ...) {
   # Check if
-  if (is(object,"wqs")) {
+  if (is(object, "wqs")) {
     coef(object$fit, ...) # generic function in stats.
   } else {
     stop("object is not from class `wqs`.")
