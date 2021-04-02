@@ -1,8 +1,25 @@
 
+# miWQS 0.4.4
+
+  - Edited the Description field of DESCRIPTION file to meet CRAN
+    standards.
+
+# miWQS 0.4.3
+
+  - Updated the email address of the maintainer in `DESCRIPTION`.
+  - `make.quantile.matrix()`: Adjusted quantile function by adding
+    optional argument `digits = 7` to reflect change in quantile version
+    in CRAN version 4.0.5. The change does not affect CRAN version 4.0.4
+    or below.
+
+> The names of quantile()’s result no longer depend on the global
+> getOption(“digits”), but quantile() gets a new optional argument
+> digits = 7 instead.
+
 # miWQS 0.4.2
 
-  - Fixed discrepnacy in accordance with CRAN standards: Removed global
-    variables `estimate` and `chemical` from enviornment in
+  - Fixed discrepancy in accordance with CRAN standards: Removed global
+    variables `estimate` and `chemical` from environment in
     `plot.wqs()`.
 
 # miWQS 0.4.1

@@ -37,41 +37,70 @@
 #' @import stats
 #' @export
 
-make.quantile.matrix <- function(X,
-                                 n.quantiles,
-                                 place.bdls.in.Q1 = if (anyNA(X)) TRUE else FALSE,
-                                 ...,
-                                 verbose = FALSE
+make.quantile.matrix <- function(
+  X,
+  n.quantiles,
+  place.bdls.in.Q1 = if (anyNA(X)) TRUE else FALSE,
+  ...,
+  verbose = FALSE
 ) {
+
   # Check: X must be numeric
   no.not.numeric <- sum(apply(X, 2, class) != "numeric")
-  a <- ifelse(no.not.numeric == 0, "",
-    stop("At least one chemical in X is not numeric")
+  a <- ifelse(no.not.numeric == 0,
+              "",
+              stop("At least one chemical in X is not numeric")
   )
   # If (place.bdls.in.Q1 is null, any missing values in X are automatically placed into the first quantile; otherwise, if complete X values are observed, it is false.
   # if (is.null(place.bdls.in.Q1))  place.bdls.in.Q1 <- anyNA(X)
 
   if (!place.bdls.in.Q1) {
     message("#> No missing values in matrix detected. Regular quantiles computed.")
+
     # Find the quantile for each columns
     q <- matrix(-20, dim(X)[1], dim(X)[2])
     I <- dim(X)[2]
     for (i in 1:I) {
-      x.break <- stats::quantile(X[, i],  probs = c(0:n.quantiles / n.quantiles),
-        na.rm = FALSE, names = TRUE, type = 7,  ...)
-      # print(x.break)
+      x.break <- stats::quantile(
+        X[, i],
+        probs = c(0:n.quantiles / n.quantiles),
+        na.rm = FALSE,
+        names = TRUE,
+        type = 7,
+        digits = 7,  #Added in R 4.0.5
+        ...
+        )
+       print(x.break)
       # q[, i] <- q.cut <- cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE) -1
-      q[, i] <- .bincode(X[, i], breaks = x.break, include.lowest = TRUE) - 1
+      q[, i] <- .bincode(
+        X[, i],
+        breaks = x.break,
+        include.lowest = TRUE
+        ) - 1
     }
+
   } else {
     message("#> All BDLs are placed in the first quantile")
+
     q <- matrix(-10, dim(X)[1], dim(X)[2])
     I <- dim(X)[2]
     for (i in 1:I) {
       # For those observed, divide up the quantiles - 1.
-      x.break <- stats::quantile(X[, i],  probs = c(0:(n.quantiles - 1) / (n.quantiles - 1)),
-        na.rm = TRUE,   names = TRUE, type = 7, ...)
-      q[, i] <-  cut(X[, i], breaks = x.break, labels = FALSE, include.lowest = TRUE)
+      x.break <- stats::quantile(
+        X[, i],
+        probs = c(0:(n.quantiles - 1) / (n.quantiles - 1)),
+        na.rm = TRUE,
+        names = TRUE,
+        type = 7,
+        digits = 7,  #Added in R 4.0.5
+        ...
+      )
+      q[, i] <-  cut(
+        X[, i],
+        breaks = x.break,
+        labels = FALSE,
+        include.lowest = TRUE
+      )
 
       # Let the first quantile be all the BDLs.
       q[which(is.na(q[, i])), i] <- 0

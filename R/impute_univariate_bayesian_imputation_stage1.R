@@ -66,7 +66,7 @@
 #' @import coda
 #    #MCMC analysis
 ## @import lattice
-#' @importFrom utils head
+#' @import utils
 #' @importFrom truncnorm rtruncnorm
 # Use of truncated normal in simulating posterior missing values. Used in sample.univariate.bayesian.
 #' @importFrom invgamma rinvgamma
